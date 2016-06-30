@@ -7,15 +7,17 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.os.RemoteException;
 import android.util.Log;
-import com.google.android.gms.gcm.GcmNetworkManager;
-import com.google.android.gms.gcm.GcmTaskService;
-import com.google.android.gms.gcm.TaskParams;
+
 import com.altran.android.stockhawk.data.QuoteColumns;
 import com.altran.android.stockhawk.data.QuoteProvider;
 import com.altran.android.stockhawk.rest.Utils;
+import com.google.android.gms.gcm.GcmNetworkManager;
+import com.google.android.gms.gcm.GcmTaskService;
+import com.google.android.gms.gcm.TaskParams;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -36,7 +38,7 @@ public class StockTaskService extends GcmTaskService{
   public StockTaskService(){}
 
   public StockTaskService(Context context){
-    mContext = context;
+    this.mContext = context;
   }
   String fetchData(String url) throws IOException{
     Request request = new Request.Builder()
@@ -112,19 +114,15 @@ public class StockTaskService extends GcmTaskService{
       urlString = urlStringBuilder.toString();
       try{
         getResponse = fetchData(urlString);
-        result = GcmNetworkManager.RESULT_SUCCESS;
-        try {
-          ContentValues contentValues = new ContentValues();
-          // update ISCURRENT to 0 (false) so new data is current
-          if (isUpdate){
-            contentValues.put(QuoteColumns.ISCURRENT, 0);
-            mContext.getContentResolver().update(QuoteProvider.Quotes.CONTENT_URI, contentValues,
-                null, null);
+
+        if(params.getTag().equals("add")){
+          if(Utils.checkResponseOk(getResponse)){
+            result = addResponse(getResponse);
+          } else{
+            //TODO: Display toast for symbol not found
           }
-          mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
-              Utils.quoteJsonToContentVals(getResponse));
-        }catch (RemoteException | OperationApplicationException e){
-          Log.e(LOG_TAG, "Error applying batch insert", e);
+        } else{
+          result = addResponse(getResponse);
         }
       } catch (IOException e){
         e.printStackTrace();
@@ -132,6 +130,24 @@ public class StockTaskService extends GcmTaskService{
     }
 
     return result;
+  }
+
+  public int addResponse(String getResponse){
+    try {
+      ContentValues contentValues = new ContentValues();
+      // update ISCURRENT to 0 (false) so new data is current
+      if (isUpdate){
+        contentValues.put(QuoteColumns.ISCURRENT, 0);
+        mContext.getContentResolver().update(QuoteProvider.Quotes.CONTENT_URI, contentValues,
+                null, null);
+      }
+      mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
+              Utils.quoteJsonToContentVals(getResponse));
+      return GcmNetworkManager.RESULT_SUCCESS;
+    }catch (RemoteException | OperationApplicationException e){
+      Log.e(LOG_TAG, "Error applying batch insert", e);
+      return GcmNetworkManager.RESULT_FAILURE;
+    }
   }
 
 }

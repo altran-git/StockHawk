@@ -2,12 +2,15 @@ package com.altran.android.stockhawk.rest;
 
 import android.content.ContentProviderOperation;
 import android.util.Log;
+
 import com.altran.android.stockhawk.data.QuoteColumns;
 import com.altran.android.stockhawk.data.QuoteProvider;
-import java.util.ArrayList;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Created by altran on 10/8/15.
@@ -91,5 +94,37 @@ public class Utils {
       e.printStackTrace();
     }
     return builder.build();
+  }
+
+
+  /*
+   *  This function checks the JSON response and
+   *  Returns false if there are null values in JSON repsonse.
+   *  Returns true otherwise.
+   */
+  public static boolean checkResponseOk(String JSON){
+    JSONObject jsonObject;
+    try{
+      jsonObject = new JSONObject(JSON);
+      if (jsonObject != null && jsonObject.length() != 0){
+        jsonObject = jsonObject.getJSONObject("query");
+        int count = Integer.parseInt(jsonObject.getString("count"));
+        if (count == 1){
+          jsonObject = jsonObject.getJSONObject("results")
+                  .getJSONObject("quote");
+          if("null" == jsonObject.getString("Change") ||
+                  "null" == jsonObject.getString("symbol") ||
+                  "null" == jsonObject.getString("symbol") ||
+                  "null" == jsonObject.getString("symbol")){
+            return false;
+          } else {
+            return true;
+          }
+        }
+      }
+    } catch (JSONException e){
+      Log.e(LOG_TAG, "String to JSON failed: " + e);
+    }
+    return false;
   }
 }

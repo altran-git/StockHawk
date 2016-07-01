@@ -5,8 +5,11 @@ import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.os.Handler;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.Toast;
 
 import com.altran.android.stockhawk.data.QuoteColumns;
 import com.altran.android.stockhawk.data.QuoteProvider;
@@ -32,13 +35,15 @@ public class StockTaskService extends GcmTaskService{
 
   private OkHttpClient client = new OkHttpClient();
   private Context mContext;
+  private Handler mHandler;
   private StringBuilder mStoredSymbols = new StringBuilder();
   private boolean isUpdate;
 
   public StockTaskService(){}
 
-  public StockTaskService(Context context){
+  public StockTaskService(Context context, Handler handler){
     this.mContext = context;
+    this.mHandler = handler;
   }
   String fetchData(String url) throws IOException{
     Request request = new Request.Builder()
@@ -51,6 +56,7 @@ public class StockTaskService extends GcmTaskService{
 
   @Override
   public int onRunTask(TaskParams params){
+
     Cursor initQueryCursor;
     if (mContext == null){
       mContext = this;
@@ -92,6 +98,7 @@ public class StockTaskService extends GcmTaskService{
           e.printStackTrace();
         }
       }
+      initQueryCursor.close();
     } else if (params.getTag().equals("add")){
       isUpdate = false;
       // get symbol from params.getExtra and build query
@@ -119,7 +126,14 @@ public class StockTaskService extends GcmTaskService{
           if(Utils.checkResponseOk(getResponse)){
             result = addResponse(getResponse);
           } else{
-            //TODO: Display toast for symbol not found
+            mHandler.post(new Runnable() {
+              @Override
+              public void run() {
+                Toast toast = Toast.makeText(mContext, "Symbol not found!", Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
+                toast.show();
+              }
+            });
           }
         } else{
           result = addResponse(getResponse);

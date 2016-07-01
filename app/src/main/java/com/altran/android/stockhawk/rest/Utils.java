@@ -13,7 +13,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 /**
- * Created by altran on 10/8/15.
+ * Created by sam_chordas on 10/8/15.
+ * Updated by altran
  */
 public class Utils {
 
@@ -83,7 +84,7 @@ public class Utils {
       builder.withValue(QuoteColumns.PERCENT_CHANGE, truncateChange(
           jsonObject.getString("ChangeinPercent"), true));
       builder.withValue(QuoteColumns.CHANGE, truncateChange(change, false));
-      builder.withValue(QuoteColumns.ISCURRENT, 1);
+      //builder.withValue(QuoteColumns.ISCURRENT, 1);
       if (change.charAt(0) == '-'){
         builder.withValue(QuoteColumns.ISUP, 0);
       }else{

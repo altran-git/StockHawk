@@ -18,7 +18,7 @@ import com.altran.android.stockhawk.touch_helper.ItemTouchHelperAdapter;
 import com.altran.android.stockhawk.touch_helper.ItemTouchHelperViewHolder;
 
 /**
- * Created by altran on 10/6/15.
+ * Created by sam_chordas on 10/6/15.
  *  Credit to skyfishjy gist:
  *    https://gist.github.com/skyfishjy/443b7448f59be978bc59
  * for the code structure

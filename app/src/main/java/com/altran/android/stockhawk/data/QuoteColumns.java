@@ -8,7 +8,8 @@ import net.simonvt.schematic.annotation.PrimaryKey;
 import net.simonvt.schematic.annotation.Unique;
 
 /**
- * Created by altran on 10/5/15.
+ * Created by sam_chordas on 10/5/15.
+ * Updated by altran
  */
 public class QuoteColumns {
   @DataType(DataType.Type.INTEGER) @PrimaryKey @AutoIncrement

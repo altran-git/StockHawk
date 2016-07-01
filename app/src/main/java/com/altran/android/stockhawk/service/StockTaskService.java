@@ -1,10 +1,8 @@
 package com.altran.android.stockhawk.service;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.util.Log;
@@ -25,9 +23,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 /**
- * Created by altran on 9/30/15.
+ * Created by sam_chordas on 9/30/15.
  * The GCMTask service is primarily for periodic tasks. However, OnRunTask can be called directly
  * and is used for the initialization and adding task as well.
+ *
+ * Updated by altran
  */
 public class StockTaskService extends GcmTaskService{
   private String LOG_TAG = StockTaskService.class.getSimpleName();
@@ -36,7 +36,7 @@ public class StockTaskService extends GcmTaskService{
   private Context mContext;
   private Handler mHandler;
   private StringBuilder mStoredSymbols = new StringBuilder();
-  private boolean isUpdate;
+  //private boolean isUpdate;
 
   public StockTaskService(){}
 
@@ -55,6 +55,7 @@ public class StockTaskService extends GcmTaskService{
 
   @Override
   public int onRunTask(TaskParams params){
+    Log.d(LOG_TAG, "onRunTask");
 
     Cursor initQueryCursor;
     if (mContext == null){
@@ -70,7 +71,7 @@ public class StockTaskService extends GcmTaskService{
       e.printStackTrace();
     }
     if (params.getTag().equals("init") || params.getTag().equals("periodic")){
-      isUpdate = true;
+      //isUpdate = true;
       initQueryCursor = mContext.getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
           new String[] { "Distinct " + QuoteColumns.SYMBOL }, null,
           null, null);
@@ -83,7 +84,7 @@ public class StockTaskService extends GcmTaskService{
           e.printStackTrace();
         }
       } else if (initQueryCursor != null){
-        DatabaseUtils.dumpCursor(initQueryCursor);
+        //DatabaseUtils.dumpCursor(initQueryCursor);
         initQueryCursor.moveToFirst();
         for (int i = 0; i < initQueryCursor.getCount(); i++){
           mStoredSymbols.append("\""+
@@ -99,7 +100,7 @@ public class StockTaskService extends GcmTaskService{
       }
       initQueryCursor.close();
     } else if (params.getTag().equals("add")){
-      isUpdate = false;
+      //isUpdate = false;
       // get symbol from params.getExtra and build query
       String stockInput = params.getExtras().getString("symbol");
       try {
@@ -145,13 +146,13 @@ public class StockTaskService extends GcmTaskService{
 
   public int addResponse(String getResponse){
     try {
-      ContentValues contentValues = new ContentValues();
-      // update ISCURRENT to 0 (false) so new data is current
-      if (isUpdate){
-        contentValues.put(QuoteColumns.ISCURRENT, 0);
-        mContext.getContentResolver().update(QuoteProvider.Quotes.CONTENT_URI, contentValues,
-                null, null);
-      }
+//      ContentValues contentValues = new ContentValues();
+//      // update ISCURRENT to 0 (false) so new data is current
+//      if (isUpdate){
+//        contentValues.put(QuoteColumns.ISCURRENT, 0);
+//        mContext.getContentResolver().update(QuoteProvider.Quotes.CONTENT_URI, contentValues,
+//                null, null);
+//      }
       mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
               Utils.quoteJsonToContentVals(getResponse));
       return GcmNetworkManager.RESULT_SUCCESS;

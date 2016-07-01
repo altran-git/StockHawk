@@ -1,7 +1,7 @@
 package com.altran.android.stockhawk.touch_helper;
 
 /**
- * Created by altran on 10/6/15.
+ * Created by sam_chordas on 10/6/15.
  * credit to Paul Burke (ipaulpro)
  * Interface for enabling swiping to delete
  */

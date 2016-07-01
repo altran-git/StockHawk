@@ -9,7 +9,8 @@ import android.util.Log;
 import com.google.android.gms.gcm.TaskParams;
 
 /**
- * Created by altran on 10/1/15.
+ * Created by sam_chordas on 10/1/15.
+ * Updated by altran
  */
 public class StockIntentService extends IntentService {
   private Handler mHandler;

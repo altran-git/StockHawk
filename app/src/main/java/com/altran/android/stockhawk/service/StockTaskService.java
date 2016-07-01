@@ -8,7 +8,6 @@ import android.database.DatabaseUtils;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.util.Log;
-import android.view.Gravity;
 import android.widget.Toast;
 
 import com.altran.android.stockhawk.data.QuoteColumns;
@@ -129,9 +128,7 @@ public class StockTaskService extends GcmTaskService{
             mHandler.post(new Runnable() {
               @Override
               public void run() {
-                Toast toast = Toast.makeText(mContext, "Symbol not found!", Toast.LENGTH_LONG);
-                toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
-                toast.show();
+                Toast.makeText(mContext, "Symbol not found!", Toast.LENGTH_SHORT).show();
               }
             });
           }

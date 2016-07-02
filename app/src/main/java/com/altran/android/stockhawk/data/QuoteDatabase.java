@@ -15,18 +15,23 @@ public class QuoteDatabase {
   private QuoteDatabase(){}
 
   public static final String QUOTES = "quotes";
-  public static final int VERSION = 7;
+  public static final int VERSION = 8;
 
   @OnCreate public static void onCreate(SQLiteDatabase db) {
     final String SQL_CREATE_QUOTES_TABLE = "CREATE TABLE " + QUOTES + " (" +
             QuoteColumns._ID + " INTEGER PRIMARY KEY, " +
-            QuoteColumns.SYMBOL + " INTEGER NOT NULL, " +
+            QuoteColumns.SYMBOL + " TEXT NOT NULL, " +
+            QuoteColumns.NAME + " TEXT NOT NULL, " +
             QuoteColumns.PERCENT_CHANGE + " TEXT NOT NULL, " +
             QuoteColumns.CHANGE + " TEXT NOT NULL, " +
             QuoteColumns.BIDPRICE + " TEXT NOT NULL, " +
-            QuoteColumns.CREATED + " TEXT, " +
+            QuoteColumns.PREV_CLOSE + " TEXT NOT NULL, " +
+            QuoteColumns.OPEN_BID + " TEXT NOT NULL, " +
+            QuoteColumns.DAY_LOW + " TEXT NOT NULL, " +
+            QuoteColumns.DAY_HIGH + " TEXT NOT NULL, " +
+            QuoteColumns.YEAR_LOW + " TEXT NOT NULL, " +
+            QuoteColumns.YEAR_HIGH + " TEXT NOT NULL, " +
             QuoteColumns.ISUP + " INTEGER NOT NULL, " +
-            QuoteColumns.ISCURRENT + " INTEGER, " +
             "UNIQUE (" + QuoteColumns.SYMBOL + ") ON CONFLICT REPLACE);";
 
     db.execSQL(SQL_CREATE_QUOTES_TABLE);

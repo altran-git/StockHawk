@@ -15,8 +15,6 @@ import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.TaskParams;
 import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -43,14 +41,6 @@ public class StockTaskService extends GcmTaskService{
   public StockTaskService(Context context, Handler handler){
     this.mContext = context;
     this.mHandler = handler;
-  }
-  String fetchData(String url) throws IOException{
-    Request request = new Request.Builder()
-        .url(url)
-        .build();
-
-    Response response = client.newCall(request).execute();
-    return response.body().string();
   }
 
   @Override
@@ -120,7 +110,7 @@ public class StockTaskService extends GcmTaskService{
     if (urlStringBuilder != null){
       urlString = urlStringBuilder.toString();
       try{
-        getResponse = fetchData(urlString);
+        getResponse = Utils.fetchData(client, urlString);
 
         if(params.getTag().equals("add")){
           if(Utils.checkResponseOk(getResponse)){

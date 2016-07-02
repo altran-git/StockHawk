@@ -5,11 +5,15 @@ import android.util.Log;
 
 import com.altran.android.stockhawk.data.QuoteColumns;
 import com.altran.android.stockhawk.data.QuoteProvider;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -80,11 +84,17 @@ public class Utils {
     try {
       String change = jsonObject.getString("Change");
       builder.withValue(QuoteColumns.SYMBOL, jsonObject.getString("symbol"));
+      builder.withValue(QuoteColumns.NAME, jsonObject.getString("Name"));
       builder.withValue(QuoteColumns.BIDPRICE, truncateBidPrice(jsonObject.getString("Bid")));
+      builder.withValue(QuoteColumns.PREV_CLOSE, jsonObject.getString("PreviousClose"));
+      builder.withValue(QuoteColumns.OPEN_BID, jsonObject.getString("Open"));
+      builder.withValue(QuoteColumns.DAY_LOW, jsonObject.getString("DaysLow"));
+      builder.withValue(QuoteColumns.DAY_HIGH, jsonObject.getString("DaysHigh"));
+      builder.withValue(QuoteColumns.YEAR_LOW, jsonObject.getString("YearLow"));
+      builder.withValue(QuoteColumns.YEAR_HIGH, jsonObject.getString("YearHigh"));
       builder.withValue(QuoteColumns.PERCENT_CHANGE, truncateChange(
           jsonObject.getString("ChangeinPercent"), true));
       builder.withValue(QuoteColumns.CHANGE, truncateChange(change, false));
-      //builder.withValue(QuoteColumns.ISCURRENT, 1);
       if (change.charAt(0) == '-'){
         builder.withValue(QuoteColumns.ISUP, 0);
       }else{
@@ -113,10 +123,11 @@ public class Utils {
         if (count == 1){
           jsonObject = jsonObject.getJSONObject("results")
                   .getJSONObject("quote");
-          if("null" == jsonObject.getString("Change") ||
-                  "null" == jsonObject.getString("symbol") ||
-                  "null" == jsonObject.getString("symbol") ||
-                  "null" == jsonObject.getString("symbol")){
+          if("null" == jsonObject.getString("symbol") ||
+                  "null" == jsonObject.getString("Name") ||
+                  "null" == jsonObject.getString("Bid") ||
+                  "null" == jsonObject.getString("Change") ||
+                  "null" == jsonObject.getString("ChangeinPercent")){
             return false;
           } else {
             return true;
@@ -127,5 +138,14 @@ public class Utils {
       Log.e(LOG_TAG, "String to JSON failed: " + e);
     }
     return false;
+  }
+
+  public static String fetchData(OkHttpClient client, String url) throws IOException {
+    Request request = new Request.Builder()
+            .url(url)
+            .build();
+
+    Response response = client.newCall(request).execute();
+    return response.body().string();
   }
 }

@@ -1,9 +1,10 @@
 package com.altran.android.stockhawk;
 
-import android.support.v4.app.Fragment;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -135,6 +136,9 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     Log.d(LOG_TAG, "onLoadFinished");
 
     if (cursor != null && cursor.moveToFirst()) {
+      String name = cursor.getString(COL_QUOTE_NAME);
+      getActivity().setTitle(name);
+
       String bidText = cursor.getString(COL_QUOTE_BIDPRICE);
       mBidView.setText(bidText);
 
@@ -146,6 +150,13 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
       String changePercentText = cursor.getString(COL_QUOTE_PERCENT_CHANGE);
       mChangeView.setText(String.format(getActivity()
               .getString(R.string.format_change_bid_display),changeText, changePercentText));
+
+      if(cursor.getInt(COL_QUOTE_ISUP) == 1){
+        mChangeView.setTextColor(getColorResource(R.color.material_green_500));
+      } else {
+        mChangeView.setTextColor(getColorResource(R.color.material_red_500));
+      }
+
 
       String prevCloseText = cursor.getString(COL_QUOTE_PREV_CLOSE);
       mPrevCloseView.setText(prevCloseText);
@@ -170,5 +181,13 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
   @Override
   public void onLoaderReset(Loader<Cursor> loader) {
     Log.d(LOG_TAG, "onLoaderReset");
+  }
+
+  public int getColorResource(int colorId){
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      return getResources().getColor(colorId);
+    } else {
+      return getResources().getColor(colorId, null);
+    }
   }
 }

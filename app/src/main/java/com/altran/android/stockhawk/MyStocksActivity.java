@@ -8,6 +8,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -84,8 +85,15 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
             new RecyclerViewItemClickListener.OnItemClickListener() {
               @Override public void onItemClick(View v, int position) {
-                //TODO:
-                // do something on item click
+                mCursor.moveToPosition(position);
+                String symbol = mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL));
+
+                Uri uri = QuoteProvider.Quotes.withSymbol(symbol);
+
+                Context context = v.getContext();
+                Intent intent = new Intent(context, DetailActivity.class);
+                intent.setData(uri);
+                context.startActivity(intent);
               }
             }));
     recyclerView.setAdapter(mCursorAdapter);

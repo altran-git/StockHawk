@@ -11,15 +11,17 @@
             android:columnCount="3">
 
     <GridLayout
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:columnCount="2"
+        android:rowCount="3"
         android:layout_columnWeight="1"
-        android:layout_gravity="fill">
+        android:useDefaultMargins="true">
 
         <TextView
             android:id="@+id/detail_prevclose_label_textview"
             android:gravity="center_vertical"
-            android:text="@string/prevClose"/>
+            android:text="@string/prevClose"
+            android:layout_rowWeight="1"/>
 
         <TextView
             android:id="@+id/detail_prevclose_textview"
@@ -32,7 +34,8 @@
         <TextView
             android:id="@+id/detail_daylow_label_textview"
             android:gravity="center_vertical"
-            android:text="@string/dayLow"/>
+            android:text="@string/dayLow"
+            android:layout_rowWeight="1"/>
 
         <TextView
             android:id="@+id/detail_daylow_textview"
@@ -45,13 +48,14 @@
         <TextView
             android:id="@+id/detail_yearlow_label_textview"
             android:gravity="center_vertical"
-            android:text="@string/yearLow" />
+            android:text="@string/yearLow"
+            android:layout_rowWeight="1"/>
 
         <TextView
             android:id="@+id/detail_yearlow_textview"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:textSize="15sp"
-            android:gravity="right"
+            android:gravity="center_vertical|right"
             android:layout_gravity="fill"
             tools:text="26.15"/>
     </GridLayout>
@@ -60,15 +64,17 @@
         android:layout_width="20dp"/>
 
     <GridLayout
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:columnCount="2"
+        android:rowCount="3"
         android:layout_columnWeight="1"
-        android:layout_gravity="fill">
+        android:useDefaultMargins="true">
 
         <TextView
             android:id="@+id/detail_open_label_textview"
             android:gravity="center_vertical"
-            android:text="@string/open" />
+            android:text="@string/open"
+            android:layout_rowWeight="1"/>
 
         <TextView
             android:id="@+id/detail_open_textview"
@@ -81,7 +87,8 @@
         <TextView
             android:id="@+id/detail_dayhigh_label_textview"
             android:gravity="center_vertical"
-            android:text="@string/dayHigh" />
+            android:text="@string/dayHigh"
+            android:layout_rowWeight="1"/>
 
         <TextView
             android:id="@+id/detail_dayhigh_textview"
@@ -94,13 +101,14 @@
         <TextView
             android:id="@+id/detail_yearhigh_label_textview"
             android:gravity="center_vertical"
-            android:text="@string/yearHigh"/>
+            android:text="@string/yearHigh"
+            android:layout_rowWeight="1"/>
 
         <TextView
             android:id="@+id/detail_yearhigh_textview"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:textSize="15sp"
-            android:gravity="right"
+            android:gravity="center_vertical|right"
             android:layout_gravity="fill"
             tools:text="39.98" />
     </GridLayout>

@@ -20,6 +20,6 @@
   <string name="open">Open</string>
   <string name="dayHigh">Day High</string>
   <string name="yearHigh">Year High</string>
-  <string name="format_change_bid_display"><xliff:g id="Change">%1$s</xliff:g>(<xliff:g id="ChangePercent">%2$s</xliff:g>)</string>
+  <string name="format_change_bid_display"><xliff:g id="Change">%1$s</xliff:g> (<xliff:g id="ChangePercent">%2$s</xliff:g>)</string>
   <string name="format_symbol_display">NASDAQ: <xliff:g id="Symbol">%1$s</xliff:g></string>
 </resources>

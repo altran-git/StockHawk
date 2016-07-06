@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/tools">
   <string name="app_name">Stock Hawk</string>
   <string name="action_example">Example action</string>
   <string name="action_settings">Settings</string>
@@ -12,4 +12,14 @@
   <string name="symbol_cancel">Cancel</string>
   <string name="symbol_hint">FB</string>
   <string name="symbol_prefill"></string>
+
+  <!--Resource strings for detail_extras_grid item titles-->
+  <string name="prevClose">Prev Close</string>
+  <string name="dayLow">Day Low</string>
+  <string name="yearLow">Year Low</string>
+  <string name="open">Open</string>
+  <string name="dayHigh">Day High</string>
+  <string name="yearHigh">Year High</string>
+  <string name="format_change_bid_display"><xliff:g id="Change">%1$s</xliff:g>(<xliff:g id="ChangePercent">%2$s</xliff:g>)</string>
+  <string name="format_symbol_display">NASDAQ: <xliff:g id="Symbol">%1$s</xliff:g></string>
 </resources>

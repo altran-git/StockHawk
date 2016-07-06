@@ -1,4 +1,4 @@
-package com.altran.android.stockhawk.ui;
+package com.altran.android.stockhawk;
 
 import android.app.LoaderManager;
 import android.content.Context;
@@ -22,7 +22,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.altran.android.stockhawk.R;
 import com.altran.android.stockhawk.data.QuoteColumns;
 import com.altran.android.stockhawk.data.QuoteProvider;
 import com.altran.android.stockhawk.rest.QuoteCursorAdapter;
@@ -122,6 +121,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                     mServiceIntent.putExtra("symbol", input.toString().toUpperCase());
                     startService(mServiceIntent);
                   }
+                  c.close();
                 }
               })
               .show();

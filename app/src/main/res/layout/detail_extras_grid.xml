@@ -1,0 +1,108 @@
+<!-- Detail Layout for Grid -->
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/detail_additional_pane"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingEnd="@dimen/detail_horizontal_padding"
+            android:paddingLeft="@dimen/detail_horizontal_padding"
+            android:paddingRight="@dimen/detail_horizontal_padding"
+            android:paddingStart="@dimen/detail_horizontal_padding"
+            android:columnCount="3">
+
+    <GridLayout
+        android:layout_height="match_parent"
+        android:columnCount="2"
+        android:layout_columnWeight="1"
+        android:layout_gravity="fill">
+
+        <TextView
+            android:id="@+id/detail_prevclose_label_textview"
+            android:gravity="center_vertical"
+            android:text="@string/prevClose"/>
+
+        <TextView
+            android:id="@+id/detail_prevclose_textview"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textSize="15sp"
+            android:gravity="center_vertical|right"
+            android:layout_gravity="fill"
+            tools:text="37.99" />
+
+        <TextView
+            android:id="@+id/detail_daylow_label_textview"
+            android:gravity="center_vertical"
+            android:text="@string/dayLow"/>
+
+        <TextView
+            android:id="@+id/detail_daylow_textview"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textSize="15sp"
+            android:gravity="center_vertical|right"
+            android:layout_gravity="fill"
+            tools:text="37.17"/>
+
+        <TextView
+            android:id="@+id/detail_yearlow_label_textview"
+            android:gravity="center_vertical"
+            android:text="@string/yearLow" />
+
+        <TextView
+            android:id="@+id/detail_yearlow_textview"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textSize="15sp"
+            android:gravity="right"
+            android:layout_gravity="fill"
+            tools:text="26.15"/>
+    </GridLayout>
+
+    <Space
+        android:layout_width="20dp"/>
+
+    <GridLayout
+        android:layout_height="match_parent"
+        android:columnCount="2"
+        android:layout_columnWeight="1"
+        android:layout_gravity="fill">
+
+        <TextView
+            android:id="@+id/detail_open_label_textview"
+            android:gravity="center_vertical"
+            android:text="@string/open" />
+
+        <TextView
+            android:id="@+id/detail_open_textview"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textSize="15sp"
+            android:gravity="center_vertical|right"
+            android:layout_gravity="fill"
+            tools:text="37.68"/>
+
+        <TextView
+            android:id="@+id/detail_dayhigh_label_textview"
+            android:gravity="center_vertical"
+            android:text="@string/dayHigh" />
+
+        <TextView
+            android:id="@+id/detail_dayhigh_textview"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textSize="15sp"
+            android:gravity="center_vertical|right"
+            android:layout_gravity="fill"
+            tools:text="37.77" />
+
+        <TextView
+            android:id="@+id/detail_yearhigh_label_textview"
+            android:gravity="center_vertical"
+            android:text="@string/yearHigh"/>
+
+        <TextView
+            android:id="@+id/detail_yearhigh_textview"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textSize="15sp"
+            android:gravity="right"
+            android:layout_gravity="fill"
+            tools:text="39.98" />
+    </GridLayout>
+
+</GridLayout>

@@ -4,6 +4,7 @@ import android.content.ContentProviderOperation;
 import android.util.Log;
 
 import com.altran.android.stockhawk.data.QuoteColumns;
+import com.altran.android.stockhawk.data.QuoteHistory;
 import com.altran.android.stockhawk.data.QuoteProvider;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -55,6 +56,36 @@ public class Utils {
     }
     return batchOperations;
   }
+
+  public static QuoteHistory[] getHistoryData(String JSON){
+    JSONObject jsonObject = null;
+    JSONArray resultsArray = null;
+    try{
+      jsonObject = new JSONObject(JSON);
+      if (jsonObject != null && jsonObject.length() != 0){
+        jsonObject = jsonObject.getJSONObject("query");
+        int count = Integer.parseInt(jsonObject.getString("count"));
+        if (count > 1){
+          QuoteHistory [] quoteHistory = new QuoteHistory[count];
+          resultsArray = jsonObject.getJSONObject("results").getJSONArray("quote");
+          int resultSize = resultsArray.length();
+
+          if (resultsArray != null && resultSize != 0){
+            for (int i = 0; i < resultSize; i++){
+              jsonObject = resultsArray.getJSONObject(i);
+              quoteHistory[resultSize-i-1] = new QuoteHistory(jsonObject.getString("Date"), Float.valueOf(jsonObject.getString("Close")));
+            }
+            return quoteHistory;
+          }
+        }
+      }
+    } catch (JSONException e){
+      Log.e(LOG_TAG, "String to JSON failed: " + e);
+    }
+
+    return null;
+  }
+
 
   public static String truncateBidPrice(String bidPrice){
     bidPrice = String.format("%.2f", Float.parseFloat(bidPrice));

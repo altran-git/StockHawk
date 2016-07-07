@@ -12,10 +12,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.altran.android.stockhawk.data.QuoteColumns;
 import com.altran.android.stockhawk.data.QuoteDatabase;
+import com.altran.android.stockhawk.data.QuoteHistory;
+import com.altran.android.stockhawk.service.FetchHistoryTask;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+
+import java.util.ArrayList;
 
 /**
  * Created by ND on 7/5/2016.
@@ -27,6 +37,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
   static final String DETAIL_URI = "URI";
 
   private Uri mUri;
+  private String mSymbol;
 
   private static final String[] DETAIL_COLUMNS = {
           QuoteDatabase.QUOTES + "." + QuoteColumns._ID,
@@ -69,6 +80,9 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
   private TextView mDayHighView;
   private TextView mYearLowView;
   private TextView mYearHighView;
+  private LineChart mLineChart;
+  private TabHost mTabHost;
+  private View tabContent;
 
   public DetailActivityFragment() {
   }
@@ -86,6 +100,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     Bundle arguments = getArguments();
     if (arguments != null){
       mUri = arguments.getParcelable(DETAIL_URI);
+      mSymbol = mUri.getLastPathSegment();
     }
 
     View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
@@ -99,8 +114,51 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     mDayHighView = (TextView) rootView.findViewById(R.id.detail_dayhigh_textview);
     mYearLowView = (TextView) rootView.findViewById(R.id.detail_yearlow_textview);
     mYearHighView = (TextView) rootView.findViewById(R.id.detail_yearhigh_textview);
+    mLineChart = (LineChart) rootView.findViewById(R.id.detail_stock_linechart);
+    mTabHost = (TabHost) rootView.findViewById(R.id.tabhost);
+    mTabHost.setup();
+    TabHost.TabSpec spec = mTabHost.newTabSpec("Tab One");
+
+    spec = mTabHost.newTabSpec("Tab 1");
+    spec.setIndicator("Tab 1");
+    spec.setContent(android.R.id.tabcontent);
+    mTabHost.addTab(spec);
+
+    FetchHistoryTask fetchHistoryTask = new FetchHistoryTask(new FetchHistoryTask.AsyncResponse() {
+      @Override
+      public void processFinish(QuoteHistory [] result) {
+        Legend legend = mLineChart.getLegend();
+        legend.setEnabled(false);
+
+        LineData data = chartSetup(result);
+        mLineChart.setDescription(null);
+        mLineChart.setData(data);
+        mLineChart.setAutoScaleMinMaxEnabled(true);
+        mLineChart.invalidate();
+
+      }
+    },mSymbol, "2016-06-22", "2016-07-06");
+    fetchHistoryTask.execute();
 
     return rootView;
+  }
+
+  public LineData chartSetup(QuoteHistory [] result){
+    ArrayList<Entry> entries = new ArrayList<>();
+    ArrayList<String> labels = new ArrayList<String>();
+
+    for(int i = 0; i<result.length; i++){
+      entries.add(new Entry(result[i].getCloseBid(), i));
+      labels.add(result[i].getDate());
+    }
+
+
+    LineDataSet lineDataSet = new LineDataSet(entries, "Close Bid");
+    lineDataSet.setDrawValues(false);
+
+    LineData data = new LineData(labels, lineDataSet);
+
+    return data;
   }
 
   @Override
@@ -152,9 +210,9 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
               .getString(R.string.format_change_bid_display),changeText, changePercentText));
 
       if(cursor.getInt(COL_QUOTE_ISUP) == 1){
-        mChangeView.setTextColor(getColorResource(R.color.material_green_500));
+        mChangeView.setTextColor(getColorResource(R.color.material_green_A200));
       } else {
-        mChangeView.setTextColor(getColorResource(R.color.material_red_500));
+        mChangeView.setTextColor(getColorResource(R.color.material_red_A200));
       }
 
 
@@ -189,5 +247,29 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     } else {
       return getResources().getColor(colorId, null);
     }
+  }
+
+  public int findMin(float[] array){
+    float min=array[0];
+
+    for (int i = 1; i < array.length; i++) {
+      if (array[i] < min) {
+        min = array[i];
+      }
+    }
+
+    return (int)min;
+  }
+
+  public int findMax(float[] array){
+    float max=array[0];
+
+    for (int i = 1; i < array.length; i++) {
+      if (array[i] > max) {
+        max = array[i];
+      }
+    }
+
+    return (int)max;
   }
 }

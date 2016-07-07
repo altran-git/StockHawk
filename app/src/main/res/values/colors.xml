@@ -7,4 +7,6 @@
 
   <color name="material_green_500">#4CAF50</color>
   <color name="material_red_500">#F44336</color>
+  <color name="material_green_A200">#69F0AE</color>
+  <color name="material_red_A200">#FF5252</color>
 </resources>

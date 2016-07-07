@@ -2,6 +2,7 @@ package com.altran.android.stockhawk.service;
 
 import android.os.AsyncTask;
 
+import com.altran.android.stockhawk.data.QuoteHistory;
 import com.altran.android.stockhawk.rest.Utils;
 import com.squareup.okhttp.OkHttpClient;
 
@@ -12,23 +13,25 @@ import java.net.URLEncoder;
 /**
  * Created by ND on 7/1/2016.
  */
-public class FetchHistoryTask extends AsyncTask<Void, Void, Void> {
+public class FetchHistoryTask extends AsyncTask<Void, Void, QuoteHistory[]> {
   private static final String LOG_TAG = FetchHistoryTask.class.getSimpleName();
 
   private static String mSymbol;
   private static String mStartDate;
   private static String mEndDate;
+  public AsyncResponse mDelegate = null;
 
   private OkHttpClient client = new OkHttpClient();
 
-  public FetchHistoryTask(String symbol, String startDate, String endDate) {
+  public FetchHistoryTask(AsyncResponse delegate, String symbol, String startDate, String endDate) {
+    this.mDelegate = delegate;
     this.mSymbol = symbol;
     this.mStartDate = startDate;
     this.mEndDate = endDate;
   }
 
   @Override
-  protected Void doInBackground(Void... params) {
+  protected QuoteHistory[] doInBackground(Void... params) {
 
     StringBuilder urlStringBuilder = new StringBuilder();
     try{
@@ -58,6 +61,7 @@ public class FetchHistoryTask extends AsyncTask<Void, Void, Void> {
       try{
         getResponse = Utils.fetchData(client, urlString);
         //Todo: Get Data from JSON response
+        return Utils.getHistoryData(getResponse);
 
       } catch (IOException e){
         e.printStackTrace();
@@ -68,7 +72,11 @@ public class FetchHistoryTask extends AsyncTask<Void, Void, Void> {
   }
 
   @Override
-  protected void onPostExecute(Void aVoid) {
+  protected void onPostExecute(QuoteHistory[] result) {
+    mDelegate.processFinish(result);
+  }
 
+  public interface AsyncResponse {
+    void processFinish(QuoteHistory[] result);
   }
 }

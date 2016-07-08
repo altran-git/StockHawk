@@ -1,7 +1,10 @@
 package com.altran.android.stockhawk.service;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 
+import com.altran.android.stockhawk.DetailActivityFragment;
 import com.altran.android.stockhawk.data.QuoteHistory;
 import com.altran.android.stockhawk.rest.Utils;
 import com.squareup.okhttp.OkHttpClient;
@@ -9,6 +12,10 @@ import com.squareup.okhttp.OkHttpClient;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 
 /**
  * Created by ND on 7/1/2016.
@@ -16,18 +23,46 @@ import java.net.URLEncoder;
 public class FetchHistoryTask extends AsyncTask<Void, Void, QuoteHistory[]> {
   private static final String LOG_TAG = FetchHistoryTask.class.getSimpleName();
 
+  private static Context mContext;
   private static String mSymbol;
   private static String mStartDate;
   private static String mEndDate;
+  private static String mSelectedTab;
   public AsyncResponse mDelegate = null;
+
+  private static ProgressDialog mDialog;
 
   private OkHttpClient client = new OkHttpClient();
 
-  public FetchHistoryTask(AsyncResponse delegate, String symbol, String startDate, String endDate) {
+  public FetchHistoryTask(AsyncResponse delegate, Context context, String symbol, String selectedTab) {
     this.mDelegate = delegate;
+    this.mContext = context;
     this.mSymbol = symbol;
-    this.mStartDate = startDate;
-    this.mEndDate = endDate;
+    this.mSelectedTab = selectedTab;
+    this.mDialog = new ProgressDialog(mContext);
+  }
+
+  @Override
+  protected void onPreExecute() {
+    super.onPreExecute();
+    this.mDialog.show();
+
+    //find the startDate and endDate for query
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    GregorianCalendar calEndDate = new GregorianCalendar();
+    mEndDate = dateFormat.format(calEndDate.getTime());
+
+    GregorianCalendar calStartDate = new GregorianCalendar();
+
+    if(mSelectedTab.equals(DetailActivityFragment.ONE_WEEK)){
+      calStartDate.add(Calendar.WEEK_OF_YEAR, -1);
+    } else if(mSelectedTab.equals(DetailActivityFragment.ONE_MONTH)){
+      calStartDate.add(Calendar.MONTH, -1);
+    } else {
+      calStartDate.add(Calendar.YEAR, -1);
+    }
+
+    mStartDate = dateFormat.format(calStartDate.getTime());
   }
 
   @Override
@@ -73,6 +108,10 @@ public class FetchHistoryTask extends AsyncTask<Void, Void, QuoteHistory[]> {
 
   @Override
   protected void onPostExecute(QuoteHistory[] result) {
+    super.onPostExecute(result);
+    if (mDialog.isShowing()) {
+      mDialog.dismiss();
+    }
     mDelegate.processFinish(result);
   }
 

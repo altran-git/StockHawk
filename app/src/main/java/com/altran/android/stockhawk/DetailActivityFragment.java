@@ -2,6 +2,7 @@ package com.altran.android.stockhawk;
 
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,8 +20,9 @@ import com.altran.android.stockhawk.data.QuoteColumns;
 import com.altran.android.stockhawk.data.QuoteDatabase;
 import com.altran.android.stockhawk.data.QuoteHistory;
 import com.altran.android.stockhawk.service.FetchHistoryTask;
+import com.altran.android.stockhawk.touch_helper.CustomMarkerView;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -34,10 +36,21 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
   private static final String LOG_TAG = DetailActivityFragment.class.getSimpleName();
   private final static int DETAIL_LOADER = 0;
+  public final static String ONE_WEEK = "1W";
+  public final static String ONE_MONTH = "1M";
+  public final static String ONE_YEAR = "1Y";
+
   static final String DETAIL_URI = "URI";
 
   private Uri mUri;
   private String mSymbol;
+  private String mSelectedTab;
+
+  ArrayList<Entry> entries = new ArrayList<>();
+  ArrayList<String> labels = new ArrayList<>();
+  LineDataSet lineDataSet;
+  LineData data;
+  XAxis xAxis;
 
   private static final String[] DETAIL_COLUMNS = {
           QuoteDatabase.QUOTES + "." + QuoteColumns._ID,
@@ -82,7 +95,10 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
   private TextView mYearHighView;
   private LineChart mLineChart;
   private TabHost mTabHost;
-  private View tabContent;
+  private View mTabContent;
+  private CustomMarkerView mCustomMarkerView;
+
+  FetchHistoryTask fetchHistoryTask;
 
   public DetailActivityFragment() {
   }
@@ -91,6 +107,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
   public void onCreate(Bundle savedInstanceState) {
     Log.d(LOG_TAG, "onCreate");
     super.onCreate(savedInstanceState);
+    mSelectedTab = ONE_WEEK;
   }
 
   @Override
@@ -116,49 +133,114 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     mYearHighView = (TextView) rootView.findViewById(R.id.detail_yearhigh_textview);
     mLineChart = (LineChart) rootView.findViewById(R.id.detail_stock_linechart);
     mTabHost = (TabHost) rootView.findViewById(R.id.tabhost);
-    mTabHost.setup();
-    TabHost.TabSpec spec = mTabHost.newTabSpec("Tab One");
+    mTabContent = (View) rootView.findViewById(android.R.id.tabcontent);
+    mCustomMarkerView = new CustomMarkerView(getActivity(), R.layout.custom_marker_view_layout);
 
-    spec = mTabHost.newTabSpec("Tab 1");
-    spec.setIndicator("Tab 1");
-    spec.setContent(android.R.id.tabcontent);
-    mTabHost.addTab(spec);
+    setupTabs();
 
-    FetchHistoryTask fetchHistoryTask = new FetchHistoryTask(new FetchHistoryTask.AsyncResponse() {
+    fetchHistoryTask = new FetchHistoryTask(new FetchHistoryTask.AsyncResponse() {
       @Override
       public void processFinish(QuoteHistory [] result) {
-        Legend legend = mLineChart.getLegend();
-        legend.setEnabled(false);
-
-        LineData data = chartSetup(result);
-        mLineChart.setDescription(null);
-        mLineChart.setData(data);
-        mLineChart.setAutoScaleMinMaxEnabled(true);
-        mLineChart.invalidate();
-
+        chartSetup(result);
       }
-    },mSymbol, "2016-06-22", "2016-07-06");
+    },getContext(),mSymbol, ONE_WEEK);
     fetchHistoryTask.execute();
 
     return rootView;
   }
 
-  public LineData chartSetup(QuoteHistory [] result){
-    ArrayList<Entry> entries = new ArrayList<>();
-    ArrayList<String> labels = new ArrayList<String>();
+  private void setupTabs() {
+    mTabHost.setup();
 
+    TabHost.TabSpec tabSpec;
+    tabSpec = mTabHost.newTabSpec("1W");
+    tabSpec.setIndicator("1W");
+    tabSpec.setContent(android.R.id.tabcontent);
+    mTabHost.addTab(tabSpec);
+
+    tabSpec = mTabHost.newTabSpec("1M");
+    tabSpec.setIndicator("1M");
+    tabSpec.setContent(android.R.id.tabcontent);
+    mTabHost.addTab(tabSpec);
+
+    tabSpec = mTabHost.newTabSpec("1Y");
+    tabSpec.setIndicator("1Y");
+    tabSpec.setContent(android.R.id.tabcontent);
+    mTabHost.addTab(tabSpec);
+
+    if (mSelectedTab.equals(ONE_WEEK)) {
+      mTabHost.setCurrentTab(0);
+    } else if (mSelectedTab.equals(ONE_MONTH)) {
+      mTabHost.setCurrentTab(1);
+    } else {
+      mTabHost.setCurrentTab(2);
+    }
+
+    mTabContent.setVisibility(View.VISIBLE);
+
+    mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+      @Override
+      public void onTabChanged(String tabId) {
+        mSelectedTab = tabId;
+
+        if(fetchHistoryTask.getStatus() != AsyncTask.Status.FINISHED){
+          fetchHistoryTask.cancel(true);
+        }
+
+        fetchHistoryTask = new FetchHistoryTask(new FetchHistoryTask.AsyncResponse() {
+          @Override
+          public void processFinish(QuoteHistory [] result) {
+            chartSetup(result);
+          }
+        },getContext(),mSymbol, mSelectedTab);
+        fetchHistoryTask.execute();
+      }
+    });
+  }
+
+  public void chartSetup(QuoteHistory [] result){
+    entries.clear();
+    labels.clear();
+    //Add plots and date labels
     for(int i = 0; i<result.length; i++){
       entries.add(new Entry(result[i].getCloseBid(), i));
       labels.add(result[i].getDate());
     }
 
-
-    LineDataSet lineDataSet = new LineDataSet(entries, "Close Bid");
+    //Setup the Linedata
+    lineDataSet = new LineDataSet(entries, "Close Bid");
     lineDataSet.setDrawValues(false);
+    lineDataSet.setDrawHorizontalHighlightIndicator(false);
+    lineDataSet.setDrawVerticalHighlightIndicator(false);
+    lineDataSet.setCircleRadius(1.5f);
 
-    LineData data = new LineData(labels, lineDataSet);
+    data = new LineData(labels, lineDataSet);
 
-    return data;
+    //Disable the legend
+    mLineChart.getLegend().setEnabled(false);
+
+    //Setup the X axis
+    xAxis = mLineChart.getXAxis();
+    xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+    xAxis.setAvoidFirstLastClipping(true);
+    xAxis.setTextColor(getColorResource(android.R.color.white));
+
+    //Disable the Y Axis labels
+    mLineChart.getAxisRight().setEnabled(false);
+    mLineChart.getAxisLeft().setEnabled(false);
+
+    //General chart settings
+    mLineChart.setDescription(null);
+    mLineChart.setAutoScaleMinMaxEnabled(true);
+
+    //setup markers
+    mLineChart.setMarkerView(mCustomMarkerView);
+
+    //Set data and notify chart of change
+    mLineChart.setData(data);
+    mLineChart.invalidate();
+
+    mLineChart.animateY(500);
   }
 
   @Override
@@ -247,29 +329,5 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     } else {
       return getResources().getColor(colorId, null);
     }
-  }
-
-  public int findMin(float[] array){
-    float min=array[0];
-
-    for (int i = 1; i < array.length; i++) {
-      if (array[i] < min) {
-        min = array[i];
-      }
-    }
-
-    return (int)min;
-  }
-
-  public int findMax(float[] array){
-    float max=array[0];
-
-    for (int i = 1; i < array.length; i++) {
-      if (array[i] > max) {
-        max = array[i];
-      }
-    }
-
-    return (int)max;
   }
 }

@@ -19,17 +19,16 @@
         <FrameLayout
             android:id="@android:id/tabcontent"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:paddingEnd="@dimen/chart_padding"
+            android:paddingLeft="@dimen/chart_padding"
+            android:paddingRight="@dimen/chart_padding"
+            android:paddingStart="@dimen/chart_padding">
 
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/detail_stock_linechart"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingTop="@dimen/detail_horizontal_padding"
-                android:paddingEnd="@dimen/detail_horizontal_padding"
-                android:paddingLeft="@dimen/detail_horizontal_padding"
-                android:paddingRight="@dimen/detail_horizontal_padding"
-                android:paddingStart="@dimen/detail_horizontal_padding"/>
+                android:layout_height="match_parent"/>
         </FrameLayout>
     </LinearLayout>
 </TabHost>

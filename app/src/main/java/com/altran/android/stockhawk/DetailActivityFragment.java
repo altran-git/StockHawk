@@ -13,8 +13,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.altran.android.stockhawk.data.QuoteColumns;
 import com.altran.android.stockhawk.data.QuoteDatabase;
@@ -97,6 +99,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
   private TabHost mTabHost;
   private View mTabContent;
   private CustomMarkerView mCustomMarkerView;
+  private ProgressBar mProgressBar;
 
   FetchHistoryTask fetchHistoryTask;
 
@@ -135,21 +138,24 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     mTabHost = (TabHost) rootView.findViewById(R.id.tabhost);
     mTabContent = (View) rootView.findViewById(android.R.id.tabcontent);
     mCustomMarkerView = new CustomMarkerView(getActivity(), R.layout.custom_marker_view_layout);
+    mProgressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
 
-    setupTabs();
+    tabSetup();
 
     fetchHistoryTask = new FetchHistoryTask(new FetchHistoryTask.AsyncResponse() {
       @Override
       public void processFinish(QuoteHistory [] result) {
-        chartSetup(result);
+        if(result != null){
+          chartSetup(result);
+        }
       }
-    },getContext(),mSymbol, ONE_WEEK);
+    },mProgressBar,mLineChart,mSymbol,ONE_WEEK);
     fetchHistoryTask.execute();
 
     return rootView;
   }
 
-  private void setupTabs() {
+  private void tabSetup() {
     mTabHost.setup();
 
     TabHost.TabSpec tabSpec;
@@ -190,9 +196,14 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         fetchHistoryTask = new FetchHistoryTask(new FetchHistoryTask.AsyncResponse() {
           @Override
           public void processFinish(QuoteHistory [] result) {
-            chartSetup(result);
+            if(result != null){
+              chartSetup(result);
+            } else{
+              mLineChart.clear();
+              Toast.makeText(getActivity(), "Timed out!", Toast.LENGTH_SHORT).show();
+            }
           }
-        },getContext(),mSymbol, mSelectedTab);
+        },mProgressBar,mLineChart,mSymbol,mSelectedTab);
         fetchHistoryTask.execute();
       }
     });
@@ -223,7 +234,13 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     xAxis = mLineChart.getXAxis();
     xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
     xAxis.setAvoidFirstLastClipping(true);
-    xAxis.setTextColor(getColorResource(android.R.color.white));
+
+    //this check is needed to see if Fragment is attached to Activity
+    //If I click the UP action before AsyncTask is complete and try to getResource,
+    //an IllegalStateException will be thrown.
+    if(isAdded()) {
+      xAxis.setTextColor(getColorResource(android.R.color.white));
+    }
 
     //Disable the Y Axis labels
     mLineChart.getAxisRight().setEnabled(false);
@@ -241,6 +258,20 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     mLineChart.invalidate();
 
     mLineChart.animateY(500);
+  }
+
+  public int getColorResource(int colorId){
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      return getResources().getColor(colorId);
+    } else {
+      return getResources().getColor(colorId, null);
+    }
+  }
+
+  @Override
+  public void onStop() {
+    super.onStop();
+    mLineChart.removeAllViews();
   }
 
   @Override
@@ -321,13 +352,5 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
   @Override
   public void onLoaderReset(Loader<Cursor> loader) {
     Log.d(LOG_TAG, "onLoaderReset");
-  }
-
-  public int getColorResource(int colorId){
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      return getResources().getColor(colorId);
-    } else {
-      return getResources().getColor(colorId, null);
-    }
   }
 }

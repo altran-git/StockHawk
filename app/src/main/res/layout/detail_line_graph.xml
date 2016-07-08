@@ -25,6 +25,16 @@
             android:paddingRight="@dimen/chart_padding"
             android:paddingStart="@dimen/chart_padding">
 
+            <RelativeLayout
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center">
+                <ProgressBar
+                    android:id="@+id/progress_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </RelativeLayout>
+
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/detail_stock_linechart"
                 android:layout_width="match_parent"

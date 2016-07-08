@@ -1,12 +1,13 @@
 package com.altran.android.stockhawk.service;
 
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.AsyncTask;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.altran.android.stockhawk.DetailActivityFragment;
 import com.altran.android.stockhawk.data.QuoteHistory;
 import com.altran.android.stockhawk.rest.Utils;
+import com.github.mikephil.charting.charts.LineChart;
 import com.squareup.okhttp.OkHttpClient;
 
 import java.io.IOException;
@@ -23,29 +24,30 @@ import java.util.Locale;
 public class FetchHistoryTask extends AsyncTask<Void, Void, QuoteHistory[]> {
   private static final String LOG_TAG = FetchHistoryTask.class.getSimpleName();
 
-  private static Context mContext;
   private static String mSymbol;
   private static String mStartDate;
   private static String mEndDate;
   private static String mSelectedTab;
   public AsyncResponse mDelegate = null;
 
-  private static ProgressDialog mDialog;
+  private static ProgressBar mProgressBar;
+  private static LineChart mLineChart;
 
   private OkHttpClient client = new OkHttpClient();
 
-  public FetchHistoryTask(AsyncResponse delegate, Context context, String symbol, String selectedTab) {
+  public FetchHistoryTask(AsyncResponse delegate, ProgressBar progressBar, LineChart lineChart, String symbol, String selectedTab) {
     this.mDelegate = delegate;
-    this.mContext = context;
     this.mSymbol = symbol;
     this.mSelectedTab = selectedTab;
-    this.mDialog = new ProgressDialog(mContext);
+    this.mProgressBar = progressBar;
+    this.mLineChart = lineChart;
   }
 
   @Override
   protected void onPreExecute() {
     super.onPreExecute();
-    this.mDialog.show();
+    mProgressBar.setVisibility(View.VISIBLE);
+    mLineChart.setVisibility(View.INVISIBLE);
 
     //find the startDate and endDate for query
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -95,7 +97,7 @@ public class FetchHistoryTask extends AsyncTask<Void, Void, QuoteHistory[]> {
       urlString = urlStringBuilder.toString();
       try{
         getResponse = Utils.fetchData(client, urlString);
-        //Todo: Get Data from JSON response
+        //Get Data from JSON response
         return Utils.getHistoryData(getResponse);
 
       } catch (IOException e){
@@ -109,9 +111,8 @@ public class FetchHistoryTask extends AsyncTask<Void, Void, QuoteHistory[]> {
   @Override
   protected void onPostExecute(QuoteHistory[] result) {
     super.onPostExecute(result);
-    if (mDialog.isShowing()) {
-      mDialog.dismiss();
-    }
+    mProgressBar.setVisibility(View.INVISIBLE);
+    mLineChart.setVisibility(View.VISIBLE);
     mDelegate.processFinish(result);
   }
 

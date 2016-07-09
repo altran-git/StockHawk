@@ -187,6 +187,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
       @Override
       public void onTabChanged(String tabId) {
+        mLineChart.fitScreen();
         mSelectedTab = tabId;
 
         if(fetchHistoryTask.getStatus() != AsyncTask.Status.FINISHED){

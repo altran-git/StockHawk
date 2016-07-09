@@ -29,6 +29,7 @@ import java.net.URLEncoder;
  */
 public class StockTaskService extends GcmTaskService{
   private String LOG_TAG = StockTaskService.class.getSimpleName();
+  public static final String ACTION_DATA_UPDATED = "com.altran.android.stockhawk.ACTION_DATA_UPDATED";
 
   private OkHttpClient client = new OkHttpClient();
   private Context mContext;
@@ -136,15 +137,10 @@ public class StockTaskService extends GcmTaskService{
 
   public int addResponse(String getResponse){
     try {
-//      ContentValues contentValues = new ContentValues();
-//      // update ISCURRENT to 0 (false) so new data is current
-//      if (isUpdate){
-//        contentValues.put(QuoteColumns.ISCURRENT, 0);
-//        mContext.getContentResolver().update(QuoteProvider.Quotes.CONTENT_URI, contentValues,
-//                null, null);
-//      }
       mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
               Utils.quoteJsonToContentVals(getResponse));
+      //Update widgets after successful add
+      Utils.updateWidgets(mContext);
       return GcmNetworkManager.RESULT_SUCCESS;
     }catch (RemoteException | OperationApplicationException e){
       Log.e(LOG_TAG, "Error applying batch insert", e);
@@ -152,4 +148,4 @@ public class StockTaskService extends GcmTaskService{
     }
   }
 
-}
+  }

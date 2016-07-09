@@ -140,7 +140,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
       }
     });
 
-    ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mCursorAdapter);
+    ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mCursorAdapter, this);
     mItemTouchHelper = new ItemTouchHelper(callback);
     mItemTouchHelper.attachToRecyclerView(recyclerView);
 
@@ -218,12 +218,9 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     return new CursorLoader(this, QuoteProvider.Quotes.CONTENT_URI,
         new String[]{ QuoteColumns._ID, QuoteColumns.SYMBOL, QuoteColumns.BIDPRICE,
             QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE, QuoteColumns.ISUP},
-
-        //QuoteColumns.ISCURRENT + " = ?",
-        null,
-        //new String[]{"1"},
-        null,
-        sortOrder);
+            null,
+            null,
+            sortOrder);
   }
 
   @Override

@@ -1,7 +1,10 @@
 package com.altran.android.stockhawk.touch_helper;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+
+import com.altran.android.stockhawk.rest.Utils;
 
 /**
  * Created by sam_chordas on 10/6/15.
@@ -10,10 +13,12 @@ import android.support.v7.widget.helper.ItemTouchHelper;
  */
 public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback{
   private final ItemTouchHelperAdapter mAdapter;
+  private Context mContext;
   public static final float ALPHA_FULL = 1.0f;
 
-  public SimpleItemTouchHelperCallback(ItemTouchHelperAdapter adapter){
-    mAdapter = adapter;
+  public SimpleItemTouchHelperCallback(ItemTouchHelperAdapter adapter, Context context){
+    this.mAdapter = adapter;
+    this.mContext = context;
   }
 
   @Override
@@ -36,6 +41,7 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback{
   @Override
   public void onSwiped(RecyclerView.ViewHolder viewHolder, int i){
     mAdapter.onItemDismiss(viewHolder.getAdapterPosition());
+    Utils.updateWidgets(mContext);
   }
 
 

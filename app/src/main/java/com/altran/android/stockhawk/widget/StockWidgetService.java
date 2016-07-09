@@ -4,13 +4,13 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.altran.android.stockhawk.R;
 import com.altran.android.stockhawk.data.QuoteColumns;
-import com.altran.android.stockhawk.data.QuoteDatabase;
 import com.altran.android.stockhawk.data.QuoteProvider;
 
 /**
@@ -29,36 +29,18 @@ class StockWidgetFactory implements RemoteViewsService.RemoteViewsFactory {
   private Cursor mCursor;
 
   private static final String[] DETAIL_COLUMNS = {
-          QuoteDatabase.QUOTES + "." + QuoteColumns._ID,
           QuoteColumns.SYMBOL,
-          QuoteColumns.NAME,
-          QuoteColumns.PERCENT_CHANGE,
           QuoteColumns.CHANGE,
           QuoteColumns.BIDPRICE,
-          QuoteColumns.PREV_CLOSE,
-          QuoteColumns.OPEN_BID,
-          QuoteColumns.DAY_LOW,
-          QuoteColumns.DAY_HIGH,
-          QuoteColumns.YEAR_LOW,
-          QuoteColumns.YEAR_HIGH,
           QuoteColumns.ISUP
   };
 
   // These indices are tied to DETAIL_COLUMNS.  If DETAIL_COLUMNS changes, these
   // must change.
-  public static final int COL_QUOTE_ID = 0;
-  public static final int COL_QUOTE_SYMBOL = 1;
-  public static final int COL_QUOTE_NAME = 2;
-  public static final int COL_QUOTE_PERCENT_CHANGE = 3;
-  public static final int COL_QUOTE_CHANGE = 4;
-  public static final int COL_QUOTE_BIDPRICE = 5;
-  public static final int COL_QUOTE_PREV_CLOSE = 6;
-  public static final int COL_QUOTE_OPEN_BID = 7;
-  public static final int COL_QUOTE_DAY_LOW = 8;
-  public static final int COL_QUOTE_DAY_HIGH = 9;
-  public static final int COL_QUOTE_YEAR_LOW = 10;
-  public static final int COL_QUOTE_YEAR_HIGH = 11;
-  public static final int COL_QUOTE_ISUP = 12;
+  public static final int COL_QUOTE_SYMBOL = 0;
+  public static final int COL_QUOTE_CHANGE = 1;
+  public static final int COL_QUOTE_BIDPRICE = 2;
+  public static final int COL_QUOTE_ISUP = 3;
 
   public StockWidgetFactory(Context context, Intent intent) {
     mContext = context;
@@ -79,6 +61,7 @@ class StockWidgetFactory implements RemoteViewsService.RemoteViewsFactory {
     // from the network, etc., it is ok to do it here, synchronously. The widget will remain
     // in its current state while work is being done here, so you don't need to worry about
     // locking up the widget.
+    String sortOrder = QuoteColumns.SYMBOL + " ASC";
 
     if(mCursor != null){
       mCursor.close();
@@ -89,7 +72,7 @@ class StockWidgetFactory implements RemoteViewsService.RemoteViewsFactory {
             DETAIL_COLUMNS,
             null,
             null,
-            null);
+            sortOrder);
   }
 
   @Override
@@ -119,6 +102,23 @@ class StockWidgetFactory implements RemoteViewsService.RemoteViewsFactory {
       remoteViews.setTextViewText(R.id.widget_bid_price, mCursor.getString(COL_QUOTE_BIDPRICE));
       remoteViews.setTextViewText(R.id.widget_change, mCursor.getString(COL_QUOTE_CHANGE));
     }
+
+    if (mCursor.getInt(COL_QUOTE_ISUP) == 1){
+      remoteViews.setInt(R.id.widget_change, "setBackgroundResource", R.drawable.percent_change_pill_green);
+    } else{
+      remoteViews.setInt(R.id.widget_change, "setBackgroundResource", R.drawable.percent_change_pill_red);
+    }
+
+    // Next, set a fill-intent, which will be used to fill in the pending intent template
+    // that is set on the collection view in StockWidgetProvider.
+    Intent fillInIntent = new Intent();
+    mCursor.moveToPosition(position);
+    String symbol = mCursor.getString(COL_QUOTE_SYMBOL);
+    Uri uri = QuoteProvider.Quotes.withSymbol(symbol);
+    fillInIntent.setData(uri);
+    // Make it possible to distinguish the individual on-click
+    // action of a given item
+    remoteViews.setOnClickFillInIntent(R.id.widget_list_item, fillInIntent);
 
     return remoteViews;
   }

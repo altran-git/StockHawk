@@ -1,11 +1,14 @@
 package com.altran.android.stockhawk.rest;
 
 import android.content.ContentProviderOperation;
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.altran.android.stockhawk.data.QuoteColumns;
 import com.altran.android.stockhawk.data.QuoteHistory;
 import com.altran.android.stockhawk.data.QuoteProvider;
+import com.altran.android.stockhawk.service.StockTaskService;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -178,5 +181,12 @@ public class Utils {
 
     Response response = client.newCall(request).execute();
     return response.body().string();
+  }
+
+  public static void updateWidgets(Context context) {
+    // Setting the package ensures that only components in our app will receive the broadcast
+    Intent dataUpdatedIntent = new Intent(StockTaskService.ACTION_DATA_UPDATED)
+            .setPackage(context.getPackageName());
+    context.sendBroadcast(dataUpdatedIntent);
   }
 }

@@ -48,12 +48,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
   private String mSymbol;
   private String mSelectedTab;
 
-  ArrayList<Entry> entries = new ArrayList<>();
-  ArrayList<String> labels = new ArrayList<>();
-  LineDataSet lineDataSet;
-  LineData data;
-  XAxis xAxis;
-
   private static final String[] DETAIL_COLUMNS = {
           QuoteDatabase.QUOTES + "." + QuoteColumns._ID,
           QuoteColumns.SYMBOL,
@@ -140,13 +134,14 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     mCustomMarkerView = new CustomMarkerView(getActivity(), R.layout.custom_marker_view_layout);
     mProgressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
 
+    initialChartSetup();
     tabSetup();
 
     fetchHistoryTask = new FetchHistoryTask(new FetchHistoryTask.AsyncResponse() {
       @Override
       public void processFinish(QuoteHistory [] result) {
         if(result != null){
-          chartSetup(result);
+          plotChartData(result);
         }
       }
     },mProgressBar,mLineChart,mSymbol,ONE_WEEK);
@@ -187,7 +182,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
       @Override
       public void onTabChanged(String tabId) {
-        mLineChart.fitScreen();
         mSelectedTab = tabId;
 
         if(fetchHistoryTask.getStatus() != AsyncTask.Status.FINISHED){
@@ -198,7 +192,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
           @Override
           public void processFinish(QuoteHistory [] result) {
             if(result != null){
-              chartSetup(result);
+              plotChartData(result);
             } else{
               mLineChart.clear();
               Toast.makeText(getActivity(), "Timed out!", Toast.LENGTH_SHORT).show();
@@ -209,30 +203,12 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
       }
     });
   }
-
-  public void chartSetup(QuoteHistory [] result){
-    entries.clear();
-    labels.clear();
-    //Add plots and date labels
-    for(int i = 0; i<result.length; i++){
-      entries.add(new Entry(result[i].getCloseBid(), i));
-      labels.add(result[i].getDate());
-    }
-
-    //Setup the Linedata
-    lineDataSet = new LineDataSet(entries, "Close Bid");
-    lineDataSet.setDrawValues(false);
-    lineDataSet.setDrawHorizontalHighlightIndicator(false);
-    lineDataSet.setDrawVerticalHighlightIndicator(false);
-    lineDataSet.setCircleRadius(1.5f);
-
-    data = new LineData(labels, lineDataSet);
-
+  private void initialChartSetup(){
     //Disable the legend
     mLineChart.getLegend().setEnabled(false);
 
     //Setup the X axis
-    xAxis = mLineChart.getXAxis();
+    XAxis xAxis = mLineChart.getXAxis();
     xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
     xAxis.setAvoidFirstLastClipping(true);
 
@@ -247,19 +223,48 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     mLineChart.getAxisRight().setEnabled(false);
     mLineChart.getAxisLeft().setEnabled(false);
 
+    //Disable scaling along the Y axis
+    mLineChart.setScaleYEnabled(false);
+
     //General chart settings
     mLineChart.setDescription(null);
     mLineChart.setAutoScaleMinMaxEnabled(true);
 
     //setup markers
     mLineChart.setMarkerView(mCustomMarkerView);
+  }
+
+  private void plotChartData(QuoteHistory [] result){
+    ArrayList<Entry> entries = new ArrayList<>();
+    ArrayList<String> labels = new ArrayList<>();
+
+    //Add plots and date labels
+    for(int i = 0; i<result.length; i++){
+      entries.add(new Entry(result[i].getCloseBid(), i));
+      labels.add(result[i].getDate());
+    }
+
+    //Setup the Linedata
+    LineDataSet lineDataSet = new LineDataSet(entries, "Close Bid");
+    lineDataSet.setDrawValues(false);
+    lineDataSet.setDrawHorizontalHighlightIndicator(false);
+    lineDataSet.setDrawVerticalHighlightIndicator(false);
+    lineDataSet.setCircleRadius(1.5f);
+
+    LineData data = new LineData(labels, lineDataSet);
+
+    //Reset all zooming
+    mLineChart.fitScreen();
 
     //Set data and notify chart of change
     mLineChart.setData(data);
     mLineChart.invalidate();
 
+    //Animation
     mLineChart.animateY(500);
   }
+
+
 
   public int getColorResource(int colorId){
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -267,12 +272,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     } else {
       return getResources().getColor(colorId, null);
     }
-  }
-
-  @Override
-  public void onStop() {
-    super.onStop();
-    mLineChart.removeAllViews();
   }
 
   @Override

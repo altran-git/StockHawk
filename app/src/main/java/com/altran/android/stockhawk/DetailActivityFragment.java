@@ -328,6 +328,12 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
   }
 
   @Override
+  public void onStop() {
+    super.onStop();
+    getLoaderManager().destroyLoader(DETAIL_LOADER);
+  }
+
+  @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
     Log.d(LOG_TAG, "onCreateLoader");
 

@@ -73,14 +73,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                 .replace(R.id.stock_detail_container, fragment, DETAILFRAGMENT_TAG)
                 .commit();
       }
-      else {
-        DetailActivityFragment df = (DetailActivityFragment) getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
-        if (df == null){
-          getSupportFragmentManager().beginTransaction()
-                  .replace(R.id.stock_detail_container, new DetailActivityFragment(), DETAILFRAGMENT_TAG)
-                  .commit();
-        }
-      }
 
     } else {
       mTwoPane = false;
@@ -122,10 +114,18 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                   Bundle arguments = new Bundle();
                   arguments.putParcelable(DetailActivityFragment.DETAIL_URI, uri);
 
-                  DetailActivityFragment fragment = new DetailActivityFragment();
-                  fragment.setArguments(arguments);
+                  DetailActivityFragment df = (DetailActivityFragment) getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
+
+                  if (df != null){
+                    getSupportFragmentManager().beginTransaction()
+                            .remove(df)
+                            .commit();
+                    df = new DetailActivityFragment();
+                  }
+
+                  df.setArguments(arguments);
                   getSupportFragmentManager().beginTransaction()
-                          .replace(R.id.stock_detail_container, fragment)
+                          .replace(R.id.stock_detail_container, df, DETAILFRAGMENT_TAG)
                           .commit();
 
                 } else {
@@ -221,11 +221,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
     actionBar.setDisplayShowTitleEnabled(true);
     actionBar.setTitle(mTitle);
-  }
-
-  @Override
-  protected void onSaveInstanceState(Bundle outState) {
-    super.onSaveInstanceState(outState);
   }
 
   @Override

@@ -224,6 +224,11 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   }
 
   @Override
+  protected void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+  }
+
+  @Override
   public boolean onCreateOptionsMenu(Menu menu) {
       getMenuInflater().inflate(R.menu.my_stocks, menu);
       restoreActionBar();

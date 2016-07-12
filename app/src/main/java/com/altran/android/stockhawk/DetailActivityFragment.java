@@ -106,31 +106,44 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
   public void onCreate(Bundle savedInstanceState) {
     Log.d(LOG_TAG, "onCreate");
     super.onCreate(savedInstanceState);
-    mSelectedTab = ONE_WEEK;
+
+    if(savedInstanceState != null && savedInstanceState.containsKey("TabState"))
+    {
+      mSelectedTab = savedInstanceState.getString("TabState");
+    } else {
+      mSelectedTab = ONE_WEEK;
+    }
+
   }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     Log.d(LOG_TAG, "onCreateView");
 
-    Bundle arguments = getArguments();
-    if (arguments != null){
-      mUri = arguments.getParcelable(DETAIL_URI);
-      mSymbol = mUri.getLastPathSegment();
+    if(savedInstanceState != null){
+      mUri = savedInstanceState.getParcelable("savedUri");
+      mSymbol = savedInstanceState.getString("savedSymbol");
     } else {
-      String sortOrder = QuoteColumns.SYMBOL + " ASC";
-      mCursor = getActivity().getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
-              new String[]{QuoteColumns.SYMBOL},
-              null,
-              null,
-              sortOrder);
-
-      if(mCursor.moveToFirst())
-      {
-        mUri = QuoteProvider.Quotes.withSymbol(mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL)));
+      Bundle arguments = getArguments();
+      if (arguments != null){
+        mUri = arguments.getParcelable(DETAIL_URI);
         mSymbol = mUri.getLastPathSegment();
+      } else {
+        String sortOrder = QuoteColumns.SYMBOL + " ASC";
+        mCursor = getActivity().getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
+                new String[]{QuoteColumns.SYMBOL},
+                null,
+                null,
+                sortOrder);
+
+        if(mCursor.moveToFirst())
+        {
+          mUri = QuoteProvider.Quotes.withSymbol(mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL)));
+          mSymbol = mUri.getLastPathSegment();
+        }
       }
     }
+
 
     View rootView = inflater.inflate(R.layout.fragment_detail_start, container, false);
 
@@ -159,7 +172,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
           plotChartData(result);
         }
       }
-    },mProgressBar,mLineChart,mSymbol,ONE_WEEK);
+    },mProgressBar,mLineChart,mSymbol,mSelectedTab);
     fetchHistoryTask.execute();
 
     return rootView;
@@ -169,6 +182,9 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
   public void onSaveInstanceState(Bundle outState) {
     Log.d(LOG_TAG, "onSaveInstanceState");
     super.onSaveInstanceState(outState);
+    outState.putString("TabState", mSelectedTab);
+    outState.putParcelable("savedUri", mUri);
+    outState.putString("savedSymbol", mSymbol);
   }
 
   private void tabSetup() {
@@ -298,10 +314,10 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
   @Override
   public void onActivityCreated(Bundle savedInstanceState) {
     Log.d(LOG_TAG, "onActivityCreated");
+    super.onActivityCreated(savedInstanceState);
     // Prepare the loader.  Either re-connect with an existing one,
     // or start a new one.
     getLoaderManager().initLoader(DETAIL_LOADER, null, this);
-    super.onActivityCreated(savedInstanceState);
   }
 
   @Override

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/stock_activity_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignRight="@+id/layout_center"
+        android:layout_alignEnd="@+id/layout_center"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <com.melnykov.fab.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_add_white_24dp"
+            fab:fab_colorNormal="@color/material_blue_500"
+            fab:fab_colorPressed="@color/material_blue_600"
+            fab:fab_colorRipple="@color/ripple"
+            fab:fab_shadow="true"
+            fab:fab_type="normal"
+            fab:layout_anchor="recycler_view"
+            fab:layout_anchorGravity="bottom | end"/>
+
+    </android.support.design.widget.CoordinatorLayout>
+
+    <!-- This is used as a strut to create two columns in our RelativeLayout -->
+    <Space
+        android:id="@+id/layout_center"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_centerInParent="true" />
+
+    <!-- This is used to give the card the appropriate margin
+         list_item_extra_padding +
+         abc_list_item_padding_horizontal_material -->
+    <Space
+        android:id="@+id/cardviewAligner"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignLeft="@id/layout_center"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="64dp"
+        android:layout_marginEnd="64dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="64dp"/>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/stock_detail_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignLeft="@id/cardviewAligner"
+        android:layout_alignRight="@id/cardviewAligner"
+        android:layout_alignTop="@id/cardviewAligner"
+        android:layout_alignBottom="@id/cardviewAligner"
+        app:cardBackgroundColor="@color/background_floating_material_dark"
+        app:cardElevation="6dp"
+        app:cardPreventCornerOverlap="false"/>
+
+</RelativeLayout>

@@ -37,7 +37,7 @@ import com.google.android.gms.gcm.Task;
 import com.melnykov.fab.FloatingActionButton;
 
 public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
-
+  private static final String LOG_TAG = MyStocksActivity.class.getSimpleName();
   /**
    * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
    */
@@ -46,6 +46,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
    * Used to store the last screen title. For use in {@link #restoreActionBar()}.
    */
   private CharSequence mTitle;
+
   private Intent mServiceIntent;
   private ItemTouchHelper mItemTouchHelper;
   private static final int CURSOR_LOADER_ID = 0;
@@ -53,18 +54,45 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   private Context mContext;
   private Cursor mCursor;
   boolean isConnected;
+  private boolean mTwoPane;
+
+  private static final String DETAILFRAGMENT_TAG = "DFTAG";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_my_stocks);
     mContext = this;
+
+    if (findViewById(R.id.stock_detail_container) != null) {
+      mTwoPane = true;
+
+      if (savedInstanceState == null) {
+        DetailActivityFragment fragment = new DetailActivityFragment();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.stock_detail_container, fragment, DETAILFRAGMENT_TAG)
+                .commit();
+      }
+      else {
+        DetailActivityFragment df = (DetailActivityFragment) getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
+        if (df == null){
+          getSupportFragmentManager().beginTransaction()
+                  .replace(R.id.stock_detail_container, new DetailActivityFragment(), DETAILFRAGMENT_TAG)
+                  .commit();
+        }
+      }
+
+    } else {
+      mTwoPane = false;
+    }
+
     ConnectivityManager cm =
         (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 
     NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
     isConnected = activeNetwork != null &&
         activeNetwork.isConnectedOrConnecting();
-    setContentView(R.layout.activity_my_stocks);
+
     // The intent service is for executing immediate pulls from the Yahoo API
     // GCMTaskService can only schedule tasks, they cannot execute immediately
     mServiceIntent = new Intent(this, StockIntentService.class);
@@ -85,15 +113,27 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
             new RecyclerViewItemClickListener.OnItemClickListener() {
               @Override public void onItemClick(View v, int position) {
+
                 mCursor.moveToPosition(position);
                 String symbol = mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL));
-
                 Uri uri = QuoteProvider.Quotes.withSymbol(symbol);
 
-                Context context = v.getContext();
-                Intent intent = new Intent(context, DetailActivity.class);
-                intent.setData(uri);
-                context.startActivity(intent);
+                if(mTwoPane == true){
+                  Bundle arguments = new Bundle();
+                  arguments.putParcelable(DetailActivityFragment.DETAIL_URI, uri);
+
+                  DetailActivityFragment fragment = new DetailActivityFragment();
+                  fragment.setArguments(arguments);
+                  getSupportFragmentManager().beginTransaction()
+                          .replace(R.id.stock_detail_container, fragment)
+                          .commit();
+
+                } else {
+                  Context context = v.getContext();
+                  Intent intent = new Intent(context, DetailActivity.class);
+                  intent.setData(uri);
+                  context.startActivity(intent);
+                }
               }
             }));
     recyclerView.setAdapter(mCursorAdapter);
@@ -118,7 +158,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                       new String[] { input.toString().toUpperCase()}, null);
                   if (c.getCount() != 0) {
                     Toast toast =
-                        Toast.makeText(MyStocksActivity.this, "This stock is already saved!",
+                        Toast.makeText(MyStocksActivity.this, R.string.stock_exists,
                             Toast.LENGTH_LONG);
                     toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
                     toast.show();
@@ -213,14 +253,13 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args){
-    // This narrows the return to only the stocks that are most current.
-    String sortOrder = QuoteColumns.SYMBOL + " ASC";
-    return new CursorLoader(this, QuoteProvider.Quotes.CONTENT_URI,
-        new String[]{ QuoteColumns._ID, QuoteColumns.SYMBOL, QuoteColumns.BIDPRICE,
-            QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE, QuoteColumns.ISUP},
-            null,
-            null,
-            sortOrder);
+        String sortOrder = QuoteColumns.SYMBOL + " ASC";
+        return new CursorLoader(this, QuoteProvider.Quotes.CONTENT_URI,
+                new String[]{ QuoteColumns._ID, QuoteColumns.SYMBOL, QuoteColumns.BIDPRICE,
+                        QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE, QuoteColumns.ISUP},
+                null,
+                null,
+                sortOrder);
   }
 
   @Override

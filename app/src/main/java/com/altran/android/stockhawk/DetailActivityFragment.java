@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.altran.android.stockhawk.data.QuoteColumns;
 import com.altran.android.stockhawk.data.QuoteDatabase;
 import com.altran.android.stockhawk.data.QuoteHistory;
+import com.altran.android.stockhawk.data.QuoteProvider;
 import com.altran.android.stockhawk.service.FetchHistoryTask;
 import com.altran.android.stockhawk.touch_helper.CustomMarkerView;
 import com.github.mikephil.charting.charts.LineChart;
@@ -94,6 +95,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
   private View mTabContent;
   private CustomMarkerView mCustomMarkerView;
   private ProgressBar mProgressBar;
+  private Cursor mCursor;
 
   FetchHistoryTask fetchHistoryTask;
 
@@ -115,9 +117,22 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     if (arguments != null){
       mUri = arguments.getParcelable(DETAIL_URI);
       mSymbol = mUri.getLastPathSegment();
+    } else {
+      String sortOrder = QuoteColumns.SYMBOL + " ASC";
+      mCursor = getActivity().getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
+              new String[]{QuoteColumns.SYMBOL},
+              null,
+              null,
+              sortOrder);
+
+      if(mCursor.moveToFirst())
+      {
+        mUri = QuoteProvider.Quotes.withSymbol(mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL)));
+        mSymbol = mUri.getLastPathSegment();
+      }
     }
 
-    View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+    View rootView = inflater.inflate(R.layout.fragment_detail_start, container, false);
 
     mBidView = (TextView) rootView.findViewById(R.id.detail_bidprice_textview);
     mSymbolView = (TextView) rootView.findViewById(R.id.detail_symbol_textview);
@@ -148,6 +163,12 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     fetchHistoryTask.execute();
 
     return rootView;
+  }
+
+  @Override
+  public void onSaveInstanceState(Bundle outState) {
+    Log.d(LOG_TAG, "onSaveInstanceState");
+    super.onSaveInstanceState(outState);
   }
 
   private void tabSetup() {

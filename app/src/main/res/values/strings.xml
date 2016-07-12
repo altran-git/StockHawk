@@ -5,6 +5,8 @@
   <string name="action_change_units">Change Units</string>
   <string name="network_toast">Uh-oh! This app requires an internet connection</string>
 
+  <string name="stock_exists">"This stock is already saved!"</string>
+
   <!--Resource strings for Symbol Search Dialog-->
   <string name="symbol_search_title">Symbol Search</string>
   <string name="symbol_dialog">Search for a Stock Symbol</string>

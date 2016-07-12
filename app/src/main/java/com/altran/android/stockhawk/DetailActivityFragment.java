@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -94,6 +95,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
   private TabHost mTabHost;
   private View mTabContent;
   private CustomMarkerView mCustomMarkerView;
+  private CardView mCardView;
   private ProgressBar mProgressBar;
   private Cursor mCursor;
 
@@ -165,15 +167,20 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     initialChartSetup();
     tabSetup();
 
-    fetchHistoryTask = new FetchHistoryTask(new FetchHistoryTask.AsyncResponse() {
-      @Override
-      public void processFinish(QuoteHistory [] result) {
-        if(result != null){
-          plotChartData(result);
+    if(mSymbol != null){
+      mTabHost.setVisibility(View.VISIBLE);
+      fetchHistoryTask = new FetchHistoryTask(new FetchHistoryTask.AsyncResponse() {
+        @Override
+        public void processFinish(QuoteHistory [] result) {
+          if(result != null){
+            plotChartData(result);
+          }
         }
-      }
-    },mProgressBar,mLineChart,mSymbol,mSelectedTab);
-    fetchHistoryTask.execute();
+      },mProgressBar,mLineChart,mSymbol,mSelectedTab);
+      fetchHistoryTask.execute();
+    } else{
+      mTabHost.setVisibility(View.INVISIBLE);
+    }
 
     return rootView;
   }

@@ -24,13 +24,13 @@
             android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Stock List Empty" />
+            android:text="@string/empty_stock_list" />
 
         <com.melnykov.fab.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right"
+            android:layout_gravity="bottom|right|end"
             android:layout_margin="16dp"
             android:src="@drawable/ic_add_white_24dp"
             android:contentDescription="@string/add_new_stock"
@@ -72,11 +72,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignLeft="@id/cardviewAligner"
+        android:layout_alignStart="@id/cardviewAligner"
         android:layout_alignRight="@id/cardviewAligner"
+        android:layout_alignEnd="@id/cardviewAligner"
         android:layout_alignTop="@id/cardviewAligner"
         android:layout_alignBottom="@id/cardviewAligner"
         app:cardBackgroundColor="@color/background_floating_material_dark"
-        app:cardElevation="6dp"
+        app:cardElevation="@dimen/cardview_elevation"
         app:cardPreventCornerOverlap="false"/>
 
 </RelativeLayout>

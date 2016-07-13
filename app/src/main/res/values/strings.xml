@@ -1,7 +1,5 @@
 <resources xmlns:xliff="http://schemas.android.com/tools">
   <string name="app_name">Stock Hawk</string>
-  <string name="action_example">Example action</string>
-  <string name="action_settings">Settings</string>
   <string name="action_change_units">Change Units</string>
   <string name="network_toast">Uh-oh! This app requires an internet connection</string>
 
@@ -12,8 +10,8 @@
   <string name="symbol_dialog">Search for a Stock Symbol</string>
   <string name="symbol_add">Add</string>
   <string name="symbol_cancel">Cancel</string>
-  <string name="symbol_hint">FB</string>
-  <string name="symbol_prefill"></string>
+  <string name="symbol_hint" translatable="false">FB</string>
+  <string name="symbol_prefill" translatable="false"></string>
 
   <!--Resource strings for detail_extras_grid item titles-->
   <string name="prevClose">Prev Close</string>
@@ -25,8 +23,9 @@
   <string name="format_change_bid_display"><xliff:g id="Change">%1$s</xliff:g> (<xliff:g id="ChangePercent">%2$s</xliff:g>)</string>
   <string name="format_symbol_display">NASDAQ: <xliff:g id="Symbol">%1$s</xliff:g></string>
 
-  <string name="empty_stock_list">No Stock Data Available</string>
+  <string name="empty_stock_list">Empty Stock List</string>
   <string name="timed_out">Timed out!</string>
   <string name="symbol_not_found">Symbol not found!</string>
   <string name="add_new_stock">Add a new stock</string>
+  <string name="no_stock_selected">No Stock Selected</string>
 </resources>

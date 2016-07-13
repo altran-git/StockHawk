@@ -18,10 +18,10 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@color/material_blue_500"
-            android:paddingEnd="@dimen/detail_horizontal_padding"
             android:paddingLeft="@dimen/detail_horizontal_padding"
-            android:paddingRight="@dimen/detail_horizontal_padding"
             android:paddingStart="@dimen/detail_horizontal_padding"
+            android:paddingRight="@dimen/detail_horizontal_padding"
+            android:paddingEnd="@dimen/detail_horizontal_padding"
             android:layout_alignParentTop="true"
             android:layout_above="@+id/detail_additional_pane">
 
@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 android:fontFamily="sans-serif"
-                android:textSize="72sp"
+                android:textSize="@dimen/detail_bid_textSize"
                 tools:text="37.99"/>
             <TextView
                 android:id="@+id/detail_symbol_textview"
@@ -48,31 +48,32 @@
 
         </LinearLayout>
 
-        <!-- This is used to give the card the appropriate margin
-             list_item_extra_padding +
-             abc_list_item_padding_horizontal_material -->
+        <!-- This is used to give the card the appropriate margin -->
         <Space
             android:id="@+id/cardviewAligner"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_toRightOf="@id/stock_item"
-            android:layout_alignParentEnd="true"
+            android:layout_toEndOf="@id/stock_item"
             android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_above="@+id/detail_additional_pane"
             android:layout_marginRight="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            />
+            android:layout_marginTop="@dimen/cardview_top_margin"
+            android:layout_marginBottom="8dp"/>
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignLeft="@id/cardviewAligner"
+            android:layout_alignStart="@id/cardviewAligner"
             android:layout_alignRight="@id/cardviewAligner"
+            android:layout_alignEnd="@id/cardviewAligner"
             android:layout_alignTop="@id/cardviewAligner"
             android:layout_alignBottom="@id/cardviewAligner"
             app:cardBackgroundColor="@color/background_floating_material_dark"
-            app:cardElevation="6dp"
+            app:cardElevation="@dimen/cardview_elevation"
             app:cardPreventCornerOverlap="false">
 
             <TabHost
@@ -95,16 +96,17 @@
                         android:id="@android:id/tabcontent"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:paddingEnd="@dimen/chart_padding"
                         android:paddingLeft="@dimen/chart_padding"
+                        android:paddingStart="@dimen/chart_padding"
                         android:paddingRight="@dimen/chart_padding"
-                        android:paddingStart="@dimen/chart_padding">
+                        android:paddingEnd="@dimen/chart_padding">
 
                         <RelativeLayout
                             android:id="@+id/progress_bar_container"
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
                             android:layout_gravity="center">
+
                             <ProgressBar
                                 android:id="@+id/progress_bar"
                                 android:layout_width="wrap_content"
@@ -124,12 +126,12 @@
             android:id="@+id/detail_additional_pane"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:paddingEnd="@dimen/detail_horizontal_padding"
+            android:paddingTop="@dimen/grid_padding"
+            android:paddingBottom="@dimen/grid_padding"
             android:paddingLeft="@dimen/detail_horizontal_padding"
-            android:paddingRight="@dimen/detail_horizontal_padding"
             android:paddingStart="@dimen/detail_horizontal_padding"
+            android:paddingRight="@dimen/detail_horizontal_padding"
+            android:paddingEnd="@dimen/detail_horizontal_padding"
             android:layout_alignParentBottom="true"
             android:background="@color/background_floating_material_dark">
 
@@ -139,9 +141,12 @@
                 android:columnCount="2"
                 android:rowCount="3"
                 android:useDefaultMargins="true"
-                android:paddingRight="8dp"
+                android:paddingRight="@dimen/grid_padding"
+                android:paddingEnd="@dimen/grid_padding"
                 android:layout_alignParentLeft="true"
-                android:layout_alignRight="@+id/layout_center">
+                android:layout_alignParentStart="true"
+                android:layout_alignRight="@+id/layout_center"
+                android:layout_alignEnd="@+id/layout_center">
 
                 <TextView
                     android:id="@+id/detail_prevclose_label_textview"
@@ -152,7 +157,7 @@
                 <TextView
                     android:id="@+id/detail_prevclose_textview"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                    android:textSize="15sp"
+                    android:textSize="@dimen/detail_extra_item_textSize"
                     android:gravity="center_vertical|right"
                     android:layout_gravity="fill"
                     tools:text="37.99" />
@@ -166,7 +171,7 @@
                 <TextView
                     android:id="@+id/detail_daylow_textview"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                    android:textSize="15sp"
+                    android:textSize="@dimen/detail_extra_item_textSize"
                     android:gravity="center_vertical|right"
                     android:layout_gravity="fill"
                     tools:text="37.17"/>
@@ -180,7 +185,7 @@
                 <TextView
                     android:id="@+id/detail_yearlow_textview"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                    android:textSize="15sp"
+                    android:textSize="@dimen/detail_extra_item_textSize"
                     android:gravity="center_vertical|right"
                     android:layout_gravity="fill"
                     tools:text="26.15"/>
@@ -198,9 +203,12 @@
                 android:columnCount="2"
                 android:rowCount="3"
                 android:useDefaultMargins="true"
-                android:paddingLeft="8dp"
+                android:paddingLeft="@dimen/grid_padding"
+                android:paddingStart="@dimen/grid_padding"
                 android:layout_alignParentRight="true"
-                android:layout_alignLeft="@+id/layout_center">
+                android:layout_alignParentEnd="true"
+                android:layout_alignLeft="@+id/layout_center"
+                android:layout_alignStart="@+id/layout_center">
 
                 <TextView
                     android:id="@+id/detail_open_label_textview"
@@ -211,7 +219,7 @@
                 <TextView
                     android:id="@+id/detail_open_textview"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                    android:textSize="15sp"
+                    android:textSize="@dimen/detail_extra_item_textSize"
                     android:gravity="center_vertical|right"
                     android:layout_gravity="fill"
                     tools:text="37.68"/>
@@ -225,7 +233,7 @@
                 <TextView
                     android:id="@+id/detail_dayhigh_textview"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                    android:textSize="15sp"
+                    android:textSize="@dimen/detail_extra_item_textSize"
                     android:gravity="center_vertical|right"
                     android:layout_gravity="fill"
                     tools:text="37.77" />
@@ -239,7 +247,7 @@
                 <TextView
                     android:id="@+id/detail_yearhigh_textview"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                    android:textSize="15sp"
+                    android:textSize="@dimen/detail_extra_item_textSize"
                     android:gravity="center_vertical|right"
                     android:layout_gravity="fill"
                     tools:text="39.98" />
@@ -254,5 +262,5 @@
         android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No Stock Selected" />
+        android:text="@string/no_stock_selected" />
 </FrameLayout>

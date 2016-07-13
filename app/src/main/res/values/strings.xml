@@ -26,4 +26,7 @@
   <string name="format_symbol_display">NASDAQ: <xliff:g id="Symbol">%1$s</xliff:g></string>
 
   <string name="empty_stock_list">No Stock Data Available</string>
+  <string name="timed_out">Timed out!</string>
+  <string name="symbol_not_found">Symbol not found!</string>
+  <string name="add_new_stock">Add a new stock</string>
 </resources>

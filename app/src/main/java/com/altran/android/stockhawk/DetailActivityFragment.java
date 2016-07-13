@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +21,6 @@ import android.widget.Toast;
 import com.altran.android.stockhawk.data.QuoteColumns;
 import com.altran.android.stockhawk.data.QuoteDatabase;
 import com.altran.android.stockhawk.data.QuoteHistory;
-import com.altran.android.stockhawk.data.QuoteProvider;
 import com.altran.android.stockhawk.service.FetchHistoryTask;
 import com.altran.android.stockhawk.touch_helper.CustomMarkerView;
 import com.github.mikephil.charting.charts.LineChart;
@@ -49,6 +47,8 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
   private Uri mUri;
   private String mSymbol;
   private String mSelectedTab;
+  private Cursor mCursor;
+  FetchHistoryTask fetchHistoryTask;
 
   private static final String[] DETAIL_COLUMNS = {
           QuoteDatabase.QUOTES + "." + QuoteColumns._ID,
@@ -95,11 +95,9 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
   private TabHost mTabHost;
   private View mTabContent;
   private CustomMarkerView mCustomMarkerView;
-  private CardView mCardView;
+  private View mDetailLayout;
+  private TextView mDetailEmptyView;
   private ProgressBar mProgressBar;
-  private Cursor mCursor;
-
-  FetchHistoryTask fetchHistoryTask;
 
   public DetailActivityFragment() {
   }
@@ -122,33 +120,10 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     Log.d(LOG_TAG, "onCreateView");
 
-    if(savedInstanceState != null){
-      mUri = savedInstanceState.getParcelable("savedUri");
-      mSymbol = savedInstanceState.getString("savedSymbol");
-    } else {
-      Bundle arguments = getArguments();
-      if (arguments != null){
-        mUri = arguments.getParcelable(DETAIL_URI);
-        mSymbol = mUri.getLastPathSegment();
-      } else {
-        String sortOrder = QuoteColumns.SYMBOL + " ASC";
-        mCursor = getActivity().getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
-                new String[]{QuoteColumns.SYMBOL},
-                null,
-                null,
-                sortOrder);
-
-        if(mCursor.moveToFirst())
-        {
-          mUri = QuoteProvider.Quotes.withSymbol(mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL)));
-          mSymbol = mUri.getLastPathSegment();
-        }
-      }
-    }
-
-
     View rootView = inflater.inflate(R.layout.fragment_detail_start, container, false);
 
+    mDetailLayout = (View) rootView.findViewById(R.id.detail_layout);
+    mDetailEmptyView = (TextView) rootView.findViewById(R.id.detail_empty);
     mBidView = (TextView) rootView.findViewById(R.id.detail_bidprice_textview);
     mSymbolView = (TextView) rootView.findViewById(R.id.detail_symbol_textview);
     mChangeView = (TextView) rootView.findViewById(R.id.detail_change_textview);
@@ -164,11 +139,37 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     mCustomMarkerView = new CustomMarkerView(getActivity(), R.layout.custom_marker_view_layout);
     mProgressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
 
+    if(savedInstanceState != null){
+      mUri = savedInstanceState.getParcelable("savedUri");
+      mSymbol = savedInstanceState.getString("savedSymbol");
+
+      if(mUri != null && mSymbol != null){
+        mDetailLayout.setVisibility(View.VISIBLE);
+        mDetailEmptyView.setVisibility(View.INVISIBLE);
+      } else {
+        mDetailLayout.setVisibility(View.INVISIBLE);
+        mDetailEmptyView.setVisibility(View.VISIBLE);
+      }
+
+    } else {
+      Bundle arguments = getArguments();
+      if (arguments != null){
+        mDetailLayout.setVisibility(View.VISIBLE);
+        mDetailEmptyView.setVisibility(View.INVISIBLE);
+        mUri = arguments.getParcelable(DETAIL_URI);
+        mSymbol = mUri.getLastPathSegment();
+      } else {
+        mDetailLayout.setVisibility(View.INVISIBLE);
+        mDetailEmptyView.setVisibility(View.VISIBLE);
+      }
+    }
+
     initialChartSetup();
     tabSetup();
 
+    //mSymbol will be null on Tablet screen since the DetailFragment is inflated without any item clicked
     if(mSymbol != null){
-      mTabHost.setVisibility(View.VISIBLE);
+      //Get Chart data using processFinish interface defined in FetchHistoryTask.java
       fetchHistoryTask = new FetchHistoryTask(new FetchHistoryTask.AsyncResponse() {
         @Override
         public void processFinish(QuoteHistory [] result) {
@@ -178,8 +179,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         }
       },mProgressBar,mLineChart,mSymbol,mSelectedTab);
       fetchHistoryTask.execute();
-    } else{
-      mTabHost.setVisibility(View.INVISIBLE);
     }
 
     return rootView;
@@ -232,6 +231,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
           fetchHistoryTask.cancel(true);
         }
 
+        //Get Chart data using processFinish interface defined in FetchHistoryTask.java
         fetchHistoryTask = new FetchHistoryTask(new FetchHistoryTask.AsyncResponse() {
           @Override
           public void processFinish(QuoteHistory [] result) {
@@ -239,7 +239,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
               plotChartData(result);
             } else{
               mLineChart.clear();
-              Toast.makeText(getActivity(), "Timed out!", Toast.LENGTH_SHORT).show();
+              Toast.makeText(getActivity(), R.string.timed_out, Toast.LENGTH_SHORT).show();
             }
           }
         },mProgressBar,mLineChart,mSymbol,mSelectedTab);
@@ -308,8 +308,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     mLineChart.animateY(500);
   }
 
-
-
   public int getColorResource(int colorId){
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       return getResources().getColor(colorId);
@@ -319,18 +317,12 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
   }
 
   @Override
-  public void onActivityCreated(Bundle savedInstanceState) {
-    Log.d(LOG_TAG, "onActivityCreated");
-    super.onActivityCreated(savedInstanceState);
+  public void onResume() {
+    Log.d(LOG_TAG, "onResume");
+    super.onResume();
     // Prepare the loader.  Either re-connect with an existing one,
     // or start a new one.
     getLoaderManager().initLoader(DETAIL_LOADER, null, this);
-  }
-
-  @Override
-  public void onStop() {
-    super.onStop();
-    getLoaderManager().destroyLoader(DETAIL_LOADER);
   }
 
   @Override
@@ -377,7 +369,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
       } else {
         mChangeView.setTextColor(getColorResource(R.color.material_red_A200));
       }
-
 
       String prevCloseText = cursor.getString(COL_QUOTE_PREV_CLOSE);
       mPrevCloseView.setText(prevCloseText);

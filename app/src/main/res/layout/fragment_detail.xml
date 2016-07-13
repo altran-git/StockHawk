@@ -1,231 +1,228 @@
 <!-- Master layout. -->
-<RelativeLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!--<include layout="@layout/detail_stock_item"-->
-             <!--android:layout_width="match_parent"-->
-             <!--android:layout_height="wrap_content"-->
-             <!--android:layout_alignParentTop="true"/>-->
-
-    <!--<include layout="@layout/detail_line_graph"-->
-             <!--android:layout_width="match_parent"-->
-             <!--android:layout_height="match_parent"-->
-             <!--android:layout_below="@id/stock_item"-->
-             <!--android:layout_above="@id/detail_additional_pane"/>-->
-
-    <!--<include layout="@layout/detail_extras_grid"-->
-             <!--android:layout_width="match_parent"-->
-             <!--android:layout_height="wrap_content"-->
-             <!--android:layout_alignParentBottom="true"/>-->
-
-
-    <LinearLayout
-      android:id="@+id/stock_item"
-      android:orientation="vertical"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:background="@color/material_blue_500"
-      android:paddingEnd="@dimen/detail_horizontal_padding"
-      android:paddingLeft="@dimen/detail_horizontal_padding"
-      android:paddingRight="@dimen/detail_horizontal_padding"
-      android:paddingStart="@dimen/detail_horizontal_padding"
-      android:layout_alignParentTop="true">
-        <TextView
-            android:id="@+id/detail_bidprice_textview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            android:fontFamily="sans-serif"
-            android:textSize="72sp"
-            tools:text="37.99"/>
-        <TextView
-            android:id="@+id/detail_symbol_textview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            tools:text="NASDAQ: YHOO"/>
-        <TextView
-            android:id="@+id/detail_change_textview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            tools:text="+0.43 (+1.14%)"/>
-
-    </LinearLayout>
-
-    <TabHost
-         android:id="@+id/tabhost"
-         android:layout_width="match_parent"
-         android:layout_height="match_parent"
-         android:layout_below="@+id/stock_item"
-         android:layout_above="@+id/detail_additional_pane">
+    <RelativeLayout
+        android:id="@+id/detail_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <TabWidget
-                android:id="@android:id/tabs"
+          android:id="@+id/stock_item"
+          android:orientation="vertical"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="@color/material_blue_500"
+          android:paddingEnd="@dimen/detail_horizontal_padding"
+          android:paddingLeft="@dimen/detail_horizontal_padding"
+          android:paddingRight="@dimen/detail_horizontal_padding"
+          android:paddingStart="@dimen/detail_horizontal_padding"
+          android:layout_alignParentTop="true">
+            <TextView
+                android:id="@+id/detail_bidprice_textview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/material_blue_500" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                android:fontFamily="sans-serif"
+                android:textSize="72sp"
+                tools:text="37.99"/>
+            <TextView
+                android:id="@+id/detail_symbol_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                tools:text="NASDAQ: YHOO"/>
+            <TextView
+                android:id="@+id/detail_change_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                tools:text="+0.43 (+1.14%)"/>
 
-            <FrameLayout
-                android:id="@android:id/tabcontent"
+        </LinearLayout>
+
+        <TabHost
+             android:id="@+id/tabhost"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:layout_below="@+id/stock_item"
+             android:layout_above="@+id/detail_additional_pane">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingEnd="@dimen/chart_padding"
-                android:paddingLeft="@dimen/chart_padding"
-                android:paddingRight="@dimen/chart_padding"
-                android:paddingStart="@dimen/chart_padding">
+                android:orientation="vertical">
 
-                <RelativeLayout
-                    android:id="@+id/progress_bar_container"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:layout_gravity="center">
-                    <ProgressBar
-                        android:id="@+id/progress_bar"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                </RelativeLayout>
-
-                <com.github.mikephil.charting.charts.LineChart
-                    android:id="@+id/detail_stock_linechart"
+                <TabWidget
+                    android:id="@android:id/tabs"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
-            </FrameLayout>
-        </LinearLayout>
-    </TabHost>
+                    android:layout_height="wrap_content"
+                    android:background="@color/material_blue_500" />
 
-    <RelativeLayout
-        android:id="@+id/detail_additional_pane"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:paddingEnd="@dimen/detail_horizontal_padding"
-        android:paddingLeft="@dimen/detail_horizontal_padding"
-        android:paddingRight="@dimen/detail_horizontal_padding"
-        android:paddingStart="@dimen/detail_horizontal_padding"
-        android:layout_alignParentBottom="true">
+                <FrameLayout
+                    android:id="@android:id/tabcontent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingEnd="@dimen/chart_padding"
+                    android:paddingLeft="@dimen/chart_padding"
+                    android:paddingRight="@dimen/chart_padding"
+                    android:paddingStart="@dimen/chart_padding">
 
-        <GridLayout
+                    <RelativeLayout
+                        android:id="@+id/progress_bar_container"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_gravity="center">
+                        <ProgressBar
+                            android:id="@+id/progress_bar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </RelativeLayout>
+
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/detail_stock_linechart"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+                </FrameLayout>
+            </LinearLayout>
+        </TabHost>
+
+        <RelativeLayout
+            android:id="@+id/detail_additional_pane"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:columnCount="2"
-            android:rowCount="3"
-            android:useDefaultMargins="true"
-            android:paddingRight="8dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignRight="@+id/layout_center">
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingEnd="@dimen/detail_horizontal_padding"
+            android:paddingLeft="@dimen/detail_horizontal_padding"
+            android:paddingRight="@dimen/detail_horizontal_padding"
+            android:paddingStart="@dimen/detail_horizontal_padding"
+            android:layout_alignParentBottom="true">
 
-            <TextView
-                android:id="@+id/detail_prevclose_label_textview"
-                android:gravity="center_vertical"
-                android:text="@string/prevClose"
-                android:layout_rowWeight="1"/>
+            <GridLayout
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:columnCount="2"
+                android:rowCount="3"
+                android:useDefaultMargins="true"
+                android:paddingRight="8dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignRight="@+id/layout_center">
 
-            <TextView
-                android:id="@+id/detail_prevclose_textview"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:textSize="15sp"
-                android:gravity="center_vertical|right"
-                android:layout_gravity="fill"
-                tools:text="37.99" />
+                <TextView
+                    android:id="@+id/detail_prevclose_label_textview"
+                    android:gravity="center_vertical"
+                    android:text="@string/prevClose"
+                    android:layout_rowWeight="1"/>
 
-            <TextView
-                android:id="@+id/detail_daylow_label_textview"
-                android:gravity="center_vertical"
-                android:text="@string/dayLow"
-                android:layout_rowWeight="1"/>
+                <TextView
+                    android:id="@+id/detail_prevclose_textview"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textSize="15sp"
+                    android:gravity="center_vertical|right"
+                    android:layout_gravity="fill"
+                    tools:text="37.99" />
 
-            <TextView
-                android:id="@+id/detail_daylow_textview"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:textSize="15sp"
-                android:gravity="center_vertical|right"
-                android:layout_gravity="fill"
-                tools:text="37.17"/>
+                <TextView
+                    android:id="@+id/detail_daylow_label_textview"
+                    android:gravity="center_vertical"
+                    android:text="@string/dayLow"
+                    android:layout_rowWeight="1"/>
 
-            <TextView
-                android:id="@+id/detail_yearlow_label_textview"
-                android:gravity="center_vertical"
-                android:text="@string/yearLow"
-                android:layout_rowWeight="1"/>
+                <TextView
+                    android:id="@+id/detail_daylow_textview"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textSize="15sp"
+                    android:gravity="center_vertical|right"
+                    android:layout_gravity="fill"
+                    tools:text="37.17"/>
 
-            <TextView
-                android:id="@+id/detail_yearlow_textview"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:textSize="15sp"
-                android:gravity="center_vertical|right"
-                android:layout_gravity="fill"
-                tools:text="26.15"/>
-        </GridLayout>
+                <TextView
+                    android:id="@+id/detail_yearlow_label_textview"
+                    android:gravity="center_vertical"
+                    android:text="@string/yearLow"
+                    android:layout_rowWeight="1"/>
 
-        <Space
-            android:id="@+id/layout_center"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_centerInParent="true" />
+                <TextView
+                    android:id="@+id/detail_yearlow_textview"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textSize="15sp"
+                    android:gravity="center_vertical|right"
+                    android:layout_gravity="fill"
+                    tools:text="26.15"/>
+            </GridLayout>
 
-        <GridLayout
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:columnCount="2"
-            android:rowCount="3"
-            android:useDefaultMargins="true"
-            android:paddingLeft="8dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignLeft="@+id/layout_center">
+            <Space
+                android:id="@+id/layout_center"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_centerInParent="true" />
 
-            <TextView
-                android:id="@+id/detail_open_label_textview"
-                android:gravity="center_vertical"
-                android:text="@string/open"
-                android:layout_rowWeight="1"/>
+            <GridLayout
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:columnCount="2"
+                android:rowCount="3"
+                android:useDefaultMargins="true"
+                android:paddingLeft="8dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignLeft="@+id/layout_center">
 
-            <TextView
-                android:id="@+id/detail_open_textview"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:textSize="15sp"
-                android:gravity="center_vertical|right"
-                android:layout_gravity="fill"
-                tools:text="37.68"/>
+                <TextView
+                    android:id="@+id/detail_open_label_textview"
+                    android:gravity="center_vertical"
+                    android:text="@string/open"
+                    android:layout_rowWeight="1"/>
 
-            <TextView
-                android:id="@+id/detail_dayhigh_label_textview"
-                android:gravity="center_vertical"
-                android:text="@string/dayHigh"
-                android:layout_rowWeight="1"/>
+                <TextView
+                    android:id="@+id/detail_open_textview"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textSize="15sp"
+                    android:gravity="center_vertical|right"
+                    android:layout_gravity="fill"
+                    tools:text="37.68"/>
 
-            <TextView
-                android:id="@+id/detail_dayhigh_textview"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:textSize="15sp"
-                android:gravity="center_vertical|right"
-                android:layout_gravity="fill"
-                tools:text="37.77" />
+                <TextView
+                    android:id="@+id/detail_dayhigh_label_textview"
+                    android:gravity="center_vertical"
+                    android:text="@string/dayHigh"
+                    android:layout_rowWeight="1"/>
 
-            <TextView
-                android:id="@+id/detail_yearhigh_label_textview"
-                android:gravity="center_vertical"
-                android:text="@string/yearHigh"
-                android:layout_rowWeight="1"/>
+                <TextView
+                    android:id="@+id/detail_dayhigh_textview"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textSize="15sp"
+                    android:gravity="center_vertical|right"
+                    android:layout_gravity="fill"
+                    tools:text="37.77" />
 
-            <TextView
-                android:id="@+id/detail_yearhigh_textview"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:textSize="15sp"
-                android:gravity="center_vertical|right"
-                android:layout_gravity="fill"
-                tools:text="39.98" />
-        </GridLayout>
+                <TextView
+                    android:id="@+id/detail_yearhigh_label_textview"
+                    android:gravity="center_vertical"
+                    android:text="@string/yearHigh"
+                    android:layout_rowWeight="1"/>
+
+                <TextView
+                    android:id="@+id/detail_yearhigh_textview"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textSize="15sp"
+                    android:gravity="center_vertical|right"
+                    android:layout_gravity="fill"
+                    tools:text="39.98" />
+            </GridLayout>
+
+        </RelativeLayout>
 
     </RelativeLayout>
 
-</RelativeLayout>
+    <TextView
+        android:id="@+id/detail_empty"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No Stock Selected" />
+
+</FrameLayout>

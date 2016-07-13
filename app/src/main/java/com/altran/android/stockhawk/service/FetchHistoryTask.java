@@ -108,6 +108,8 @@ public class FetchHistoryTask extends AsyncTask<Void, Void, QuoteHistory[]> {
     return null;
   }
 
+  //onPostExecute passes results to processFinish
+  // interface that is called in DetailActivityFragment
   @Override
   protected void onPostExecute(QuoteHistory[] result) {
     super.onPostExecute(result);

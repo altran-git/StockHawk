@@ -16,10 +16,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -39,10 +41,6 @@ import com.melnykov.fab.FloatingActionButton;
 public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
   private static final String LOG_TAG = MyStocksActivity.class.getSimpleName();
   /**
-   * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-   */
-
-  /**
    * Used to store the last screen title. For use in {@link #restoreActionBar()}.
    */
   private CharSequence mTitle;
@@ -55,14 +53,18 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   private Cursor mCursor;
   boolean isConnected;
   private boolean mTwoPane;
+  private TextView mListEmptyView;
 
   private static final String DETAILFRAGMENT_TAG = "DFTAG";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    Log.d(LOG_TAG, "onCreate");
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_my_stocks);
     mContext = this;
+
+    mListEmptyView = (TextView) findViewById(R.id.list_empty);
 
     if (findViewById(R.id.stock_detail_container) != null) {
       mTwoPane = true;
@@ -73,7 +75,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                 .replace(R.id.stock_detail_container, fragment, DETAILFRAGMENT_TAG)
                 .commit();
       }
-
     } else {
       mTwoPane = false;
     }
@@ -115,14 +116,14 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                   arguments.putParcelable(DetailActivityFragment.DETAIL_URI, uri);
 
                   DetailActivityFragment df = (DetailActivityFragment) getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
-
-                  if (df != null){
+                  if (df != null) {
+                    //In two pane mode, we must remove existing fragment before creating a new one
                     getSupportFragmentManager().beginTransaction()
                             .remove(df)
                             .commit();
-                    df = new DetailActivityFragment();
                   }
 
+                  df = new DetailActivityFragment();
                   df.setArguments(arguments);
                   getSupportFragmentManager().beginTransaction()
                           .replace(R.id.stock_detail_container, df, DETAILFRAGMENT_TAG)
@@ -212,6 +213,12 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
   }
 
+  @Override
+  protected void onStop() {
+    super.onStop();
+    getLoaderManager().destroyLoader(CURSOR_LOADER_ID);
+  }
+
   public void networkToast(){
     Toast.makeText(mContext, getString(R.string.network_toast), Toast.LENGTH_SHORT).show();
   }
@@ -237,11 +244,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     // as you specify a parent activity in AndroidManifest.xml.
     int id = item.getItemId();
 
-    //noinspection SimplifiableIfStatement
-    if (id == R.id.action_settings) {
-      return true;
-    }
-
     if (id == R.id.action_change_units){
       // this is for changing stock changes from percent value to dollar value
       Utils.showPercent = !Utils.showPercent;
@@ -264,15 +266,27 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
   @Override
   public void onLoadFinished(Loader<Cursor> loader, Cursor data){
+    Log.d(LOG_TAG, "onLoadFinished");
     mCursorAdapter.swapCursor(data);
     mCursor = data;
+
+    if (mCursorAdapter.getItemCount() == 0) {
+      mListEmptyView.setVisibility(View.VISIBLE);
+      if(mTwoPane) {
+        DetailActivityFragment df = (DetailActivityFragment) getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
+        if (df != null) {
+          getSupportFragmentManager().beginTransaction()
+                  .remove(df)
+                  .commit();
+        }
+      }
+    } else{
+      mListEmptyView.setVisibility(View.INVISIBLE);
+    }
   }
 
   @Override
   public void onLoaderReset(Loader<Cursor> loader){
     mCursorAdapter.swapCursor(null);
   }
-
-
-
 }

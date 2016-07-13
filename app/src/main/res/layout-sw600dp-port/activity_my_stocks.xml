@@ -40,7 +40,7 @@
             fab:fab_shadow="true"
             fab:fab_type="normal"
             fab:layout_anchor="recycler_view"
-            fab:layout_anchorGravity="bottom | end"/>
+            fab:layout_anchorGravity="bottom|right|end"/>
 
     </android.support.design.widget.CoordinatorLayout>
 

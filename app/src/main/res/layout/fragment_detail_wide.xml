@@ -158,7 +158,7 @@
                     android:id="@+id/detail_prevclose_textview"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
                     android:textSize="@dimen/detail_extra_item_textSize"
-                    android:gravity="center_vertical|right"
+                    android:gravity="center_vertical|right|end"
                     android:layout_gravity="fill"
                     tools:text="37.99" />
 
@@ -172,7 +172,7 @@
                     android:id="@+id/detail_daylow_textview"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
                     android:textSize="@dimen/detail_extra_item_textSize"
-                    android:gravity="center_vertical|right"
+                    android:gravity="center_vertical|right|end"
                     android:layout_gravity="fill"
                     tools:text="37.17"/>
 
@@ -186,7 +186,7 @@
                     android:id="@+id/detail_yearlow_textview"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
                     android:textSize="@dimen/detail_extra_item_textSize"
-                    android:gravity="center_vertical|right"
+                    android:gravity="center_vertical|right|end"
                     android:layout_gravity="fill"
                     tools:text="26.15"/>
             </GridLayout>
@@ -220,7 +220,7 @@
                     android:id="@+id/detail_open_textview"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
                     android:textSize="@dimen/detail_extra_item_textSize"
-                    android:gravity="center_vertical|right"
+                    android:gravity="center_vertical|right|end"
                     android:layout_gravity="fill"
                     tools:text="37.68"/>
 
@@ -234,7 +234,7 @@
                     android:id="@+id/detail_dayhigh_textview"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
                     android:textSize="@dimen/detail_extra_item_textSize"
-                    android:gravity="center_vertical|right"
+                    android:gravity="center_vertical|right|end"
                     android:layout_gravity="fill"
                     tools:text="37.77" />
 
@@ -248,7 +248,7 @@
                     android:id="@+id/detail_yearhigh_textview"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
                     android:textSize="@dimen/detail_extra_item_textSize"
-                    android:gravity="center_vertical|right"
+                    android:gravity="center_vertical|right|end"
                     android:layout_gravity="fill"
                     tools:text="39.98" />
             </GridLayout>

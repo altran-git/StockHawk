@@ -16,7 +16,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -59,7 +58,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    Log.d(LOG_TAG, "onCreate");
+    //Log.d(LOG_TAG, "onCreate");
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_my_stocks);
     mContext = this;
@@ -266,7 +265,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
   @Override
   public void onLoadFinished(Loader<Cursor> loader, Cursor data){
-    Log.d(LOG_TAG, "onLoadFinished");
+    //Log.d(LOG_TAG, "onLoadFinished");
     mCursorAdapter.swapCursor(data);
     mCursor = data;
 

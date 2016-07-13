@@ -2,7 +2,6 @@ package com.altran.android.stockhawk;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 
 /**
@@ -13,7 +12,7 @@ public class DetailActivity extends AppCompatActivity{
   
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    Log.d(LOG_TAG, "onCreate");
+    //Log.d(LOG_TAG, "onCreate");
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_detail);
     getSupportActionBar().setElevation(0f);

@@ -5,7 +5,6 @@ import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.os.Handler;
 import android.os.RemoteException;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.altran.android.stockhawk.R;
@@ -36,7 +35,6 @@ public class StockTaskService extends GcmTaskService{
   private Context mContext;
   private Handler mHandler;
   private StringBuilder mStoredSymbols = new StringBuilder();
-  //private boolean isUpdate;
 
   public StockTaskService(){}
 
@@ -47,7 +45,7 @@ public class StockTaskService extends GcmTaskService{
 
   @Override
   public int onRunTask(TaskParams params){
-    Log.d(LOG_TAG, "onRunTask");
+    //Log.d(LOG_TAG, "onRunTask");
 
     Cursor initQueryCursor;
     if (mContext == null){
@@ -63,7 +61,6 @@ public class StockTaskService extends GcmTaskService{
       e.printStackTrace();
     }
     if (params.getTag().equals("init") || params.getTag().equals("periodic")){
-      //isUpdate = true;
       initQueryCursor = mContext.getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
           new String[] { "Distinct " + QuoteColumns.SYMBOL }, null,
           null, null);
@@ -92,13 +89,12 @@ public class StockTaskService extends GcmTaskService{
       }
       initQueryCursor.close();
     } else if (params.getTag().equals("add")){
-      //isUpdate = false;
       // get symbol from params.getExtra and build query
       String stockInput = params.getExtras().getString("symbol");
       try {
         urlStringBuilder.append(URLEncoder.encode("\""+stockInput+"\")", "UTF-8"));
       } catch (UnsupportedEncodingException e){
-        e.printStackTrace();
+        //e.printStackTrace();
       }
     }
     // finalize the URL for the API query.
@@ -114,6 +110,7 @@ public class StockTaskService extends GcmTaskService{
       try{
         getResponse = Utils.fetchData(client, urlString);
 
+        //If we are trying to add a new stock, we have to check if it is valid
         if(params.getTag().equals("add")){
           if(Utils.checkResponseOk(getResponse)){
             result = addResponse(getResponse);
@@ -129,7 +126,13 @@ public class StockTaskService extends GcmTaskService{
           result = addResponse(getResponse);
         }
       } catch (IOException e){
-        e.printStackTrace();
+        mHandler.post(new Runnable() {
+          @Override
+          public void run() {
+            Toast.makeText(mContext, R.string.timed_out, Toast.LENGTH_SHORT).show();
+          }
+        });
+        //e.printStackTrace();
       }
     }
 
@@ -144,7 +147,7 @@ public class StockTaskService extends GcmTaskService{
       Utils.updateWidgets(mContext);
       return GcmNetworkManager.RESULT_SUCCESS;
     }catch (RemoteException | OperationApplicationException e){
-      Log.e(LOG_TAG, "Error applying batch insert", e);
+      //Log.e(LOG_TAG, "Error applying batch insert", e);
       return GcmNetworkManager.RESULT_FAILURE;
     }
   }

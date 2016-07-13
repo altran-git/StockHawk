@@ -9,14 +9,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TabHost;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.altran.android.stockhawk.data.QuoteColumns;
 import com.altran.android.stockhawk.data.QuoteDatabase;
@@ -104,7 +102,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
-    Log.d(LOG_TAG, "onCreate");
+    //Log.d(LOG_TAG, "onCreate");
     super.onCreate(savedInstanceState);
 
     if(savedInstanceState != null && savedInstanceState.containsKey("TabState"))
@@ -118,7 +116,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    Log.d(LOG_TAG, "onCreateView");
+    //Log.d(LOG_TAG, "onCreateView");
 
     View rootView = inflater.inflate(R.layout.fragment_detail_start, container, false);
 
@@ -177,7 +175,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             plotChartData(result);
           }
         }
-      },mProgressBar,mLineChart,mSymbol,mSelectedTab);
+      },getActivity(), mProgressBar,mLineChart,mSymbol,mSelectedTab);
       fetchHistoryTask.execute();
     }
 
@@ -186,7 +184,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
   @Override
   public void onSaveInstanceState(Bundle outState) {
-    Log.d(LOG_TAG, "onSaveInstanceState");
+    //Log.d(LOG_TAG, "onSaveInstanceState");
     super.onSaveInstanceState(outState);
     outState.putString("TabState", mSelectedTab);
     outState.putParcelable("savedUri", mUri);
@@ -239,10 +237,9 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
               plotChartData(result);
             } else{
               mLineChart.clear();
-              Toast.makeText(getActivity(), R.string.timed_out, Toast.LENGTH_SHORT).show();
             }
           }
-        },mProgressBar,mLineChart,mSymbol,mSelectedTab);
+        },getActivity(), mProgressBar,mLineChart,mSymbol,mSelectedTab);
         fetchHistoryTask.execute();
       }
     });
@@ -318,7 +315,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
   @Override
   public void onResume() {
-    Log.d(LOG_TAG, "onResume");
+    //Log.d(LOG_TAG, "onResume");
     super.onResume();
     // Prepare the loader.  Either re-connect with an existing one,
     // or start a new one.
@@ -327,7 +324,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-    Log.d(LOG_TAG, "onCreateLoader");
+    //Log.d(LOG_TAG, "onCreateLoader");
 
     if (mUri != null) {
       // Now create and return a CursorLoader that will take care of
@@ -346,7 +343,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
   @Override
   public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-    Log.d(LOG_TAG, "onLoadFinished");
+    //Log.d(LOG_TAG, "onLoadFinished");
 
     if (cursor != null && cursor.moveToFirst()) {
       String name = cursor.getString(COL_QUOTE_NAME);
@@ -392,6 +389,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
   @Override
   public void onLoaderReset(Loader<Cursor> loader) {
-    Log.d(LOG_TAG, "onLoaderReset");
+    //Log.d(LOG_TAG, "onLoaderReset");
   }
 }

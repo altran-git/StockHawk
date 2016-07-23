@@ -2,13 +2,10 @@ package com.altran.android.stockhawk.service;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.altran.android.stockhawk.DetailActivityFragment;
-import com.altran.android.stockhawk.R;
 import com.altran.android.stockhawk.data.QuoteHistory;
 import com.altran.android.stockhawk.rest.Utils;
 import com.github.mikephil.charting.charts.LineChart;
@@ -34,7 +31,6 @@ public class FetchHistoryTask extends AsyncTask<Void, Void, QuoteHistory[]> {
   private static String mSelectedTab;
   public AsyncResponse mDelegate = null;
   private Context mContext;
-  Handler mHandler;
 
   private static ProgressBar mProgressBar;
   private static LineChart mLineChart;
@@ -48,7 +44,6 @@ public class FetchHistoryTask extends AsyncTask<Void, Void, QuoteHistory[]> {
     this.mSelectedTab = selectedTab;
     this.mProgressBar = progressBar;
     this.mLineChart = lineChart;
-    this.mHandler = new Handler();
   }
 
   @Override
@@ -110,12 +105,6 @@ public class FetchHistoryTask extends AsyncTask<Void, Void, QuoteHistory[]> {
 
       } catch (IOException e){
         //e.printStackTrace();
-        mHandler.post(new Runnable() {
-          @Override
-          public void run() {
-            Toast.makeText(mContext, R.string.timed_out, Toast.LENGTH_SHORT).show();
-          }
-        });
       }
     }
 

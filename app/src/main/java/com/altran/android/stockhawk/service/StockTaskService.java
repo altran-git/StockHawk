@@ -126,12 +126,6 @@ public class StockTaskService extends GcmTaskService{
           result = addResponse(getResponse);
         }
       } catch (IOException e){
-        mHandler.post(new Runnable() {
-          @Override
-          public void run() {
-            Toast.makeText(mContext, R.string.timed_out, Toast.LENGTH_SHORT).show();
-          }
-        });
         //e.printStackTrace();
       }
     }

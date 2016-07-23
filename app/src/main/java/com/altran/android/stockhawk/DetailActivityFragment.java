@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.altran.android.stockhawk.data.QuoteColumns;
 import com.altran.android.stockhawk.data.QuoteDatabase;
@@ -236,6 +237,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             if(result != null){
               plotChartData(result);
             } else{
+              Toast.makeText(getActivity(), R.string.timed_out, Toast.LENGTH_SHORT).show();
               mLineChart.clear();
             }
           }
